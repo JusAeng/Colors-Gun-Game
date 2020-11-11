@@ -12,6 +12,7 @@ public:
     Player(sf::Vector2f size)
     {
         player.setSize(size);
+       
     }
     void setPos(sf::Vector2f pos)
     {

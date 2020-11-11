@@ -4,6 +4,8 @@
 #include "Enemy.h"
 #include "Game.h"
 #include "Menu.h"
+#include "block.h"
+#include "Animetion.h"
 
 
 
@@ -16,7 +18,7 @@
 
 using namespace std;
 
-int checkBump();
+//int checkBump();
 
 int main()
 {
@@ -83,7 +85,7 @@ int main()
 
 		//background
 		sf::Texture bg;
-		bg.loadFromFile("map1.png");
+		bg.loadFromFile("map1r.png");
 		sf::RectangleShape bground;
 		bground.setSize(sf::Vector2f(12000, 780));
 		bground.setTexture(&bg);
@@ -109,7 +111,7 @@ int main()
 
 		//PlayerObject
 		Player player({ 84.0,112.0 });	
-		player.setPos({ 0.0,600.0 });
+		player.setPos({ 3000.0,600.0 });
 
 		//skillPlayer
 		Skill skilli[16], skillf[16], skillu[16];
@@ -173,26 +175,70 @@ int main()
 		
 		HP hp1,hp2,hp3;
 
-		sf::Texture heli1, heli2;
-		heli1.loadFromFile("helicopter.png");
-		heli2.loadFromFile("helicopterL.png");
-		sf::Sprite heliR, heliL;
+		sf::Texture heli1, heli2,texrope;
+		heli1.loadFromFile("helicopterRanimation.png");
+		heli2.loadFromFile("helicopterLanimation.png");
+		texrope.loadFromFile("rope.png");
+		sf::Sprite heliR, heliL[2],rope;
 		heliR.setTexture(heli1);
-		heliL.setTexture(heli2);
-		heliL.setPosition(7472.0,15.0);
+		heliL[0].setTexture(heli2);
+		heliL[0].setPosition(7472.0,15.0);
+		heliL[1].setTexture(heli2);
+		heliL[1].setPosition(8778, 15.0);
 		heliR.setPosition(11567.0, 44.0);
+		Animetion helicopR(&heli1,sf::Vector2u(1,4),0.05f);
+		Animetion helicopL(&heli2, sf::Vector2u(1, 4), 0.05f);
+		rope.setTexture(texrope);
+		rope.setPosition(11666.0,162.0);
 		
 		
 		
-		//solid
-		sf::RectangleShape sol1;
-		sol1.setFillColor(sf::Color::Red);
-		sol1.setPosition(0, 350);
-		sol1.setSize({ 100.0,100 });
-		sf::FloatRect ss = sol1.getGlobalBounds();
-		sol1.setOrigin(sf::Vector2f(ss.width / 2, ss.height / 2));
+		
+		
+		//block
+		Block finish({168,23}, {11666.0,620});
 
-		
+		Block h1box1({71,9}, { 7548.5,144.5});
+		Block h1box2({149,19}, { 7581.5 ,122.5});
+		Block h1box3({ 40,8 }, { 7728.5  ,119.5  });
+		Block h1box4({ 132,12 }, { 7727.5  ,109.5 });
+		Block h2box1({ 71,9 }, { 8855.5 ,145.5  });
+		Block h2box2({ 149,19 }, { 8888.5  ,123.5  });
+		Block h2box3({40,8}, { 9035.5 ,120.5  });
+		Block h2box4({ 132,12 }, { 9034.5  ,110.5});
+
+		Block woodair({ 1433.0,31.0 }, { 7639.5,330 });
+		Block woodbox1({ 103.0,103.0 }, {6777,627});
+		Block woodbox2({ 103.0,103.0 }, { 9745,613 });
+
+		Block b1car1({ 234.5,93.0 }, {1543.0,640.5});
+		Block b2car1({ 16,41 }, { 1636,605 });
+		Block b3car1({ 17,78 }, {1788,645});
+		b3car1.rotate(-30.38);
+		Block b1car2({ 234.5,93.0 }, { 1543.0 + 3546,640.5 });
+		Block b2car2({ 16,41 }, { 1636 + 3546,605 });
+		Block b3car2({ 17,78 }, { 1788 + 3546,645 });
+		b3car2.rotate(-30.38);
+
+		Block d1car1({ 233,175 }, {3417,559});
+		Block d2car1({ 16,41 }, {3506,521});
+		Block d3car1({ 17,78 }, {3655.4,562});
+		d3car1.rotate(-30.38);
+		Block d4car1({17,78}, {3655,645});
+		d4car1.rotate(-30.38);
+
+		Block d1car2({ 233,175 }, { 3417 + 3749,559 });
+		Block d2car2({ 16,41 }, { 3506 + 3749,521 });
+		Block d3car2({ 17,78 }, { 3655.4 + 3749,562 });
+		d3car2.rotate(-30.38);
+		Block d4car2({ 17,78 }, { 3655 + 3749,645 });
+		d4car2.rotate(-30.38);
+
+		Block b1truck1({ 158,216 }, { 5373 ,511 });
+		Block b2truck1({ 428,250 }, {5531 ,482});
+		Block b1truck2({ 158,216 }, { 5373 + 4478,511 });
+		Block b2truck2({ 428,250 }, { 5531 + 4478,482 });
+
 
 
 
@@ -203,8 +249,8 @@ int main()
 		int change = 0, isSkilli[16], isSkillf[16], isSkillu[16], scount = 0, sdir[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 		//variablePlayerDoing
-		float speed = 600.0f, gravitySpeed, retard = 25.0f;
-		int  onGround = 1, groundHeigh = 600;
+		float speed = 600.0f, gravitySpeed, retard = 25.0f,fallspeed=0;
+		int  onGround = 1, groundHeigh = 600,onBox=0;
 
 
 
@@ -309,6 +355,17 @@ int main()
 				}
 			}
 
+			//collide
+
+			if (player.getGlobalBounds().intersects(woodbox2.getGlobalBounds()))
+			{
+				if (player.getX() - woodbox2.getPos().x <= 0 && isMove == 1 || player.getX() - woodbox2.getPos().x >= 0 && isMove == -1)
+				{
+					isMove = 0;
+				}
+				
+			}
+
 			//playerDoing
 
 			if (isMove == 1)
@@ -321,20 +378,21 @@ int main()
 				player.moveLeft(speed * dt);
 				isMove = 0;
 			}
-			if (isJump == 1)
+			if (isJump == 1 && onGround == 0)
 			{
-				if (onGround == 0)
-				{
-					player.jump(gravitySpeed * dt);
-					gravitySpeed += retard;
+				player.jump(gravitySpeed * dt);
+				gravitySpeed += retard;
 
-					if (player.getY() >= groundHeigh)
-					{
-						onGround = 1;
-						isJump = 0;
-					}
+				if (player.getY() >= groundHeigh)
+				{
+					onGround = 1;
+					isJump = 0;
 				}
 			}
+			
+			
+			
+			
 			
 
 			
@@ -447,14 +505,9 @@ int main()
 				ulti = 1;
 			}
 
-			if (player.getGlobalBounds().intersects(sol1.getGlobalBounds()))
-			{
-				std::cout <<"True" << endl;
-			}
-			else
-			{
-				std::cout <<player.getY() << endl;
-			}
+			
+
+			
 			
 
 
@@ -489,23 +542,64 @@ int main()
 			
 			lblStage.setPosition({position.x+1420.0f,10.0f});
 			lblTime.setPosition({ position.x + 1420.0f,50.0f });
+
+
+
 			//ToDraw
 			window.clear();
 
 			window.draw(bground);
-
 			
-			
-			window.draw(sol1);
-			
-
-
 			window.setView(view);
 
-			//enemy0.toDraw(window);
-			//enemy1.toDraw(window);
-			//enemy2.toDraw(window);
-			//enemy3.toDraw(window);
+			window.draw(rope);
+			helicopR.Update(0,dt);
+			heliR.setTextureRect(helicopR.uvRect);
+			window.draw(heliR);
+			helicopL.Update(0, dt);
+			heliL[0].setTextureRect(helicopL.uvRect);
+			heliL[1].setTextureRect(helicopL.uvRect);
+			window.draw(heliL[0]);
+			window.draw(heliL[1]);
+
+
+			//blockcheck
+			woodair.toDraw(window);
+			woodbox1.toDraw(window);
+			woodbox2.toDraw(window);
+
+			h1box1.toDraw(window);
+			h1box2.toDraw(window);
+			h1box3.toDraw(window);
+			h1box4.toDraw(window);
+			h2box1.toDraw(window);
+			h2box2.toDraw(window);
+			h2box3.toDraw(window);
+			h2box4.toDraw(window);
+
+			b1car1.toDraw(window);
+			b2car1.toDraw(window);
+			b3car1.toDraw(window);
+			b1car2.toDraw(window);
+			b2car2.toDraw(window);
+			b3car2.toDraw(window);
+
+			d1car1.toDraw(window);
+			d2car1.toDraw(window);
+			d3car1.toDraw(window);
+			d4car1.toDraw(window);
+			d1car2.toDraw(window);
+			d2car2.toDraw(window);
+			d3car2.toDraw(window);
+			d4car2.toDraw(window);
+
+			b1truck1.toDraw(window);
+			b2truck1.toDraw(window);
+			b1truck2.toDraw(window);
+			b2truck2.toDraw(window);
+
+			finish.toDraw(window);
+			//--------------------
 
 
 			for (int i = 1; i <= scount; i++)
@@ -522,13 +616,17 @@ int main()
 			mana3.toDraw(window);
 			mana4.toDraw(window);
 			mana5.toDraw(window);
-			window.draw(heliR);
-			window.draw(heliL);
-			
-
-			//item.toDraw(window);
 			window.draw(lblStage);
 			window.draw(lblTime);
+
+
+			//enemy0.toDraw(window);
+			//enemy1.toDraw(window);
+			//enemy2.toDraw(window);
+			//enemy3.toDraw(window);
+
+			//item.toDraw(window);
+
 			if (faceRight == 1)
 			{
 				player.toDrawR(window);
@@ -544,14 +642,11 @@ int main()
 	}
 
 
-	
-
-
 	return 0;
 }
 
 
-int checkBump(Player player)
+/*int checkBump(Player player,Block block)
 {
-
-}
+	if (player.getGlobalBounds().intersects(block.getGlobalBounds()) && )
+}*/

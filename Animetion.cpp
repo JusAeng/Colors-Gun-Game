@@ -10,18 +10,18 @@ Animetion::Animetion(sf::Texture* texture, sf::Vector2u imageCount, float switch
 	uvRect.height = texture->getSize().y / float(imageCount.y);
 
 }
-void Animetion::Update(int row, float deltatime)
+void Animetion::Update(int col, float deltatime)
 {
-	currentImage.y = row;
+	currentImage.x = col;
 	totalTime += deltatime;
 
 	if (totalTime >= switchTime)
 	{
 		totalTime -= switchTime;
-		currentImage.x++;
-		if (currentImage.x >= imageCount.x)
+		currentImage.y++;
+		if (currentImage.y >= imageCount.y)
 		{
-			currentImage.x = 0;
+			currentImage.y = 0;
 		}
 	}
 
