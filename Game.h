@@ -3,50 +3,10 @@
 #include <iostream>
 #include <SFML\Graphics.hpp>
 
-class HP {
-public:
-	HP()
-	{
-		hp.setSize(sf::Vector2f(47.0,40.0));
-		texture.loadFromFile("HPF.png");
-		hp.setTexture(&texture);
-	}
-	void setPos(sf::Vector2f pos)
-	{
-		hp.setPosition(pos);
-	}
-	void toDraw(sf::RenderWindow& window)
-	{
-		window.draw(hp);
-	}
 
 
-private:
-	sf::RectangleShape hp;
-	sf::Texture texture;
-
-};
-
-class Mana {
-public:
-	Mana()
-	{
-		mana.setRadius(11.0);
-		mana.setFillColor(sf::Color(0,204,255));
-	}
-	void setPos(sf::Vector2f pos)
-	{
-		mana.setPosition(pos);
-	}
-	void toDraw(sf::RenderWindow& window)
-	{
-		window.draw(mana);
-	}
 
 
-private:
-	sf::CircleShape mana;
-};
 
 class Item {
 public:

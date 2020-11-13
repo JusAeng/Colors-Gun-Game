@@ -18,7 +18,7 @@
 
 using namespace std;
 
-//int checkBump();
+bool Colide(Player player, Block block);
 
 int main()
 {
@@ -111,7 +111,7 @@ int main()
 
 		//PlayerObject
 		Player player({ 84.0,112.0 });	
-		player.setPos({ 3000.0,600.0 });
+		player.setPos({ 300.0,600.0 });
 
 		//skillPlayer
 		Skill skilli[16], skillf[16], skillu[16];
@@ -168,12 +168,25 @@ int main()
 		sf::Clock co2; //Jswitch
 		sf::Clock co3; //Ulti
 		sf::Clock dtclock; //deltaTime
+		sf::Clock cmanaClock; //manaGain
 
 
 		//Mana+Hp
-		Mana mana1, mana2, mana3, mana4, mana5;
+
+		ostringstream pickmana;
+		ostringstream pickheart;
 		
-		HP hp1,hp2,hp3;
+		sf::Texture h6,m4;
+		h6.loadFromFile("h6.png");
+		sf::Sprite heart;
+		heart.setTexture(h6);
+		heart.setPosition(0,0);
+
+		m4.loadFromFile("m4.png");
+		sf::Sprite mana;
+		mana.setTexture(m4);
+		mana.setPosition(0, 50);
+
 
 		sf::Texture heli1, heli2,texrope;
 		heli1.loadFromFile("helicopterRanimation.png");
@@ -193,8 +206,9 @@ int main()
 		
 		
 		
-		
-		
+		Block box[100];
+		box[1].set({ 234.5,93.0 }, { 1543.0,640.5 });
+		/*
 		//block
 		Block finish({168,23}, {11666.0,620});
 
@@ -207,38 +221,40 @@ int main()
 		Block h2box3({40,8}, { 9035.5 ,120.5  });
 		Block h2box4({ 132,12 }, { 9034.5  ,110.5});
 
-		Block woodair({ 1433.0,31.0 }, { 7639.5,330 });
-		Block woodbox1({ 103.0,103.0 }, {6777,627});
-		Block woodbox2({ 103.0,103.0 }, { 9745,613 });
+		Block woodair({ 1433.0,31.0 }, { 7639.5,330 });			//woodair
+		Block woodbox1({ 103.0,103.0 }, {6777,627});			//woodbox1
+		Block woodbox2({ 103.0,103.0 }, { 9745,613 });			//woodbox2
 
-		Block b1car1({ 234.5,93.0 }, {1543.0,640.5});
-		Block b2car1({ 16,41 }, { 1636,605 });
-		Block b3car1({ 17,78 }, {1788,645});
-		b3car1.rotate(-30.38);
-		Block b1car2({ 234.5,93.0 }, { 1543.0 + 3546,640.5 });
-		Block b2car2({ 16,41 }, { 1636 + 3546,605 });
-		Block b3car2({ 17,78 }, { 1788 + 3546,645 });
+		//singCar
+		Block b1car1({ 234.5,93.0 }, {1543.0,640.5});				//b1car1
+		Block b2car1({ 16,41 }, { 1636,605 });						//b2car1
+		Block b3car1({ 17,78 }, {1788,645});						//b3car1
+		b3car1.rotate(-30.38);										
+		Block b1car2({ 234.5,93.0 }, { 1543.0 + 3546,640.5 });		//b1car2
+		Block b2car2({ 16,41 }, { 1636 + 3546,605 });				//b2car2
+		Block b3car2({ 17,78 }, { 1788 + 3546,645 });				//b3car2
 		b3car2.rotate(-30.38);
 
-		Block d1car1({ 233,175 }, {3417,559});
-		Block d2car1({ 16,41 }, {3506,521});
-		Block d3car1({ 17,78 }, {3655.4,562});
-		d3car1.rotate(-30.38);
-		Block d4car1({17,78}, {3655,645});
-		d4car1.rotate(-30.38);
-
-		Block d1car2({ 233,175 }, { 3417 + 3749,559 });
-		Block d2car2({ 16,41 }, { 3506 + 3749,521 });
-		Block d3car2({ 17,78 }, { 3655.4 + 3749,562 });
+		//doubCar
+		Block d1car1({ 233,175 }, {3417,559});					//d1car1
+		Block d2car1({ 16,41 }, {3506,521});					//d2car1
+		Block d3car1({ 17,78 }, {3655.4,562});					//d3car1
+		d3car1.rotate(-30.38);									
+		Block d4car1({17,78}, {3655,645});						//d4car1
+		d4car1.rotate(-30.38);									
+		Block d1car2({ 233,175 }, { 3417 + 3749,559 });			//d1car2
+		Block d2car2({ 16,41 }, { 3506 + 3749,521 });			//d2car2
+		Block d3car2({ 17,78 }, { 3655.4 + 3749,562 });			//d3car2
 		d3car2.rotate(-30.38);
-		Block d4car2({ 17,78 }, { 3655 + 3749,645 });
+		Block d4car2({ 17,78 }, { 3655 + 3749,645 });			//d4car2
 		d4car2.rotate(-30.38);
 
-		Block b1truck1({ 158,216 }, { 5373 ,511 });
-		Block b2truck1({ 428,250 }, {5531 ,482});
-		Block b1truck2({ 158,216 }, { 5373 + 4478,511 });
-		Block b2truck2({ 428,250 }, { 5531 + 4478,482 });
-
+		//truck
+		Block b1truck1({ 158,216 }, { 5373 ,511 });				//b1truck1
+		Block b2truck1({ 428,250 }, {5531 ,482});				//btruck1
+		Block b1truck2({ 158,216 }, { 5373 + 4478,511 });		//b1truck2
+		Block b2truck2({ 428,250 }, { 5531 + 4478,482 });		//b2truck2
+		*/
 
 
 
@@ -247,13 +263,15 @@ int main()
 
 		//variableSkill
 		int change = 0, isSkilli[16], isSkillf[16], isSkillu[16], scount = 0, sdir[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+		int cmana=4,manax=4;
 
 		//variablePlayerDoing
-		float speed = 600.0f, gravitySpeed, retard = 25.0f,fallspeed=0;
+		float speed = 600.0f, gravitySpeed, retard = 25.0f,fallspeed=0,Rspeed=600.0f,Lspeed=600.0f;
 		int  onGround = 1, groundHeigh = 600,onBox=0;
 
+		int cheart = 6;
 
-
+		
 		//------------------------------------------------------IN Game stage I------------------------
 		while (window.isOpen())
 		{
@@ -296,7 +314,8 @@ int main()
 
 			sf::Time Lcool = co1.getElapsedTime();
 			sf::Time Jcool = co2.getElapsedTime();
-			sf::Time Ucool = co3.getElapsedTime();
+			sf::Time Utime = co3.getElapsedTime();
+			sf::Time gainMana = cmanaClock.getElapsedTime();
 
 
 			//controlKey
@@ -312,11 +331,13 @@ int main()
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 			{
+				Lspeed = 600.0f;
 				faceRight = -1;
 				isMove = -1;
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 			{
+				Rspeed = 600.0f;
 				faceRight = 1;
 				isMove = 1;
 			}
@@ -335,47 +356,73 @@ int main()
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::J) && (Jcool.asSeconds() >= 0.2))
 			{
-				co2.restart();
-				sBang.play();
-				scount += 1;
-				if (ulti == 1)
+				if (cmana > 0)
 				{
-					skillu[scount].setPos({ player.getX() + 30.0f, player.getY() + 53.0f });
-					isSkillu[scount] = 1;
-				}
-				else if (change == 0)
-				{
-					skilli[scount].setPos({ player.getX() + 30.0f, player.getY() + 53.0f });
-					isSkilli[scount] = 1;
-				}
-				else
-				{
-					skillf[scount].setPos({ player.getX() + 30.0f, player.getY() + 53.0f });
-					isSkillf[scount] = 1;
+					cmana -= 1;
+					pickmana << "m" << cmana << ".png";
+					m4.loadFromFile(pickmana.str());
+					pickmana.str("");
+					mana.setTexture(m4);
+
+					co2.restart();
+					sBang.play();
+					scount += 1;
+					if (ulti == 1)
+					{
+						skillu[scount].setPos({ player.getX() + 30.0f, player.getY() + 53.0f });
+						isSkillu[scount] = 1;
+					}
+					else if (change == 0)
+					{
+						skilli[scount].setPos({ player.getX() + 30.0f, player.getY() + 53.0f });
+						isSkilli[scount] = 1;
+					}
+					else
+					{
+						skillf[scount].setPos({ player.getX() + 30.0f, player.getY() + 53.0f });
+						isSkillf[scount] = 1;
+					}
 				}
 			}
+			
 
-			//collide
-
-			if (player.getGlobalBounds().intersects(woodbox2.getGlobalBounds()))
+			//Mana_Charge
+			if (cmana == manax)
 			{
-				if (player.getX() - woodbox2.getPos().x <= 0 && isMove == 1 || player.getX() - woodbox2.getPos().x >= 0 && isMove == -1)
-				{
-					isMove = 0;
-				}
-				
+				cmanaClock.restart();
 			}
+			if (gainMana.asSeconds()>=2)
+			{
+				if (cmana < manax)
+				{
+					cmana += 1;
+					pickmana << "m" << cmana << ".png";
+					m4.loadFromFile(pickmana.str());
+					pickmana.str("");
+					mana.setTexture(m4);
+					cmanaClock.restart();
+				}
+			}
+			/*
+			cheart -= 1;
+			pickheart << "h" << cheart << ".png";
+			h6.loadFromFile(pickheart.str());
+			pickheart.str("");
+			*/
+
+
+			
 
 			//playerDoing
 
 			if (isMove == 1)
 			{
-				player.moveRight(speed * dt);
+				player.moveRight(Rspeed * dt);
 				isMove = 0;
 			}
 			if (isMove == -1)
 			{
-				player.moveLeft(speed * dt);
+				player.moveLeft(Lspeed * dt);
 				isMove = 0;
 			}
 			if (isJump == 1 && onGround == 0)
@@ -389,13 +436,8 @@ int main()
 					isJump = 0;
 				}
 			}
-			
-			
-			
-			
-			
 
-			
+						
 
 			//skill+kill
 
@@ -501,9 +543,19 @@ int main()
 
 			if (player.getGlobalBounds().intersects(item.getGlobalBounds()))
 			{
+				co3.restart();
 				item.setPOs({ -50.0f,-50.0f });
 				ulti = 1;
 			}
+			if (Utime.asSeconds() >= 12)
+			{
+				ulti = 0;
+			}
+
+
+			
+			
+			
 
 			
 
@@ -530,20 +582,13 @@ int main()
 
 			view.reset(sf::FloatRect(position.x, position.y, window.getSize().x, window.getSize().y));
 			
-			//updateUPPER
-			hp1.setPos({ position.x + 10.0f,10.0f });
-			hp2.setPos({ position.x + 60.0f,10.0f });
-			hp3.setPos({ position.x + 110.0f,10.0f });
-			mana1.setPos({ position.x + 10.0f,60.0f });
-			mana2.setPos({ position.x + 40.0f,60.0f });
-			mana3.setPos({ position.x + 70.0f,60.0f });
-			mana4.setPos({ position.x + 100.0f,60.0f });
-			mana5.setPos({ position.x + 130.0f,60.0f });
+			
 			
 			lblStage.setPosition({position.x+1420.0f,10.0f});
 			lblTime.setPosition({ position.x + 1420.0f,50.0f });
 
-
+			heart.setPosition(10 + position.x, 10);
+			mana.setPosition(19+position.x,57);
 
 			//ToDraw
 			window.clear();
@@ -562,7 +607,11 @@ int main()
 			window.draw(heliL[0]);
 			window.draw(heliL[1]);
 
-
+			for (int i = 1; i <= 30; i++)
+			{
+				box[i].toDraw(window);
+			}
+			/*
 			//blockcheck
 			woodair.toDraw(window);
 			woodbox1.toDraw(window);
@@ -600,7 +649,7 @@ int main()
 
 			finish.toDraw(window);
 			//--------------------
-
+			*/
 
 			for (int i = 1; i <= scount; i++)
 			{
@@ -608,24 +657,19 @@ int main()
 				skillf[i].toDraw(window);
 				skillu[i].toDraw(window);
 			}
-			hp1.toDraw(window);
-			hp2.toDraw(window);
-			hp3.toDraw(window);
-			mana1.toDraw(window);
-			mana2.toDraw(window);
-			mana3.toDraw(window);
-			mana4.toDraw(window);
-			mana5.toDraw(window);
+
+			window.draw(heart);
+			window.draw(mana);
 			window.draw(lblStage);
 			window.draw(lblTime);
-
+			
 
 			//enemy0.toDraw(window);
 			//enemy1.toDraw(window);
 			//enemy2.toDraw(window);
 			//enemy3.toDraw(window);
 
-			//item.toDraw(window);
+			item.toDraw(window);
 
 			if (faceRight == 1)
 			{
@@ -645,8 +689,14 @@ int main()
 	return 0;
 }
 
-
-/*int checkBump(Player player,Block block)
+bool Colide(Player player,Block block)
 {
-	if (player.getGlobalBounds().intersects(block.getGlobalBounds()) && )
-}*/
+	if (player.getGlobalBounds().intersects(block.getGlobalBounds()))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
