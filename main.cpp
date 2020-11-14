@@ -8,8 +8,6 @@
 #include "Animetion.h"
 
 
-
-
 #include<SFML/Graphics.hpp>
 #include<SFML/Audio.hpp>
 #include<SFML/Network.hpp>
@@ -17,8 +15,6 @@
 #include<SFML/Window.hpp>
 
 using namespace std;
-
-bool Colide(Player player, Block block);
 
 int main()
 {
@@ -74,14 +70,14 @@ int main()
 
 	if (stage == 1)//-----------------------------------------Stage I-----------------------------
 	{
+		window.setFramerateLimit(60);
+		float dt;  //(deltatime)
+
 		//viewSet
 		sf::View view;
 		view.reset(sf::FloatRect(0, 0, window.getSize().x, window.getSize().y));
 		view.setViewport(sf::FloatRect(0, 0, 1.0f, 1.0f));
 		sf::Vector2f position(window.getSize().x, window.getSize().y);
-
-		window.setFramerateLimit(60);
-		float dt;  //(deltatime)
 
 		//background
 		sf::Texture bg;
@@ -90,14 +86,12 @@ int main()
 		bground.setSize(sf::Vector2f(12000, 780));
 		bground.setTexture(&bg);
 
-
-
-
 		//main music
 		sf::Music music;
-		//music.openFromFile("mainSong.ogg");
-		music.setVolume(15.0);
+		music.openFromFile("mainSong.ogg");
+		music.setVolume(10.0);
 		music.play();
+
 		//skill music
 		sf::SoundBuffer soundBang, soundJump;
 		soundBang.loadFromFile("bang.wav");
@@ -108,10 +102,80 @@ int main()
 		sBang.setVolume(30.0);
 		sJump.setVolume(30.0);
 
+		//upperText
+		sf::Font font;
+		font.loadFromFile("BAUHS93.TTF");
+
+		ostringstream showStage;
+		showStage << "Stage 1";
+		sf::Text lblStage;
+		lblStage.setCharacterSize(30);
+		lblStage.setPosition({ 1420,10 });
+		lblStage.setFont(font);
+		lblStage.setString(showStage.str());
+
+		int f2sec = 0, f1min = 0, f2min = 0;
+		sf::Clock clock;
+		sf::Time elapsed = clock.getElapsedTime();
+		ostringstream showTime;
+
+		sf::Text lblTime;
+		lblTime.setCharacterSize(30);
+		lblTime.setPosition({ 1420,50 });
+		lblTime.setFont(font);
+
+		//Mana+Hp
+		ostringstream pickmana;
+		ostringstream pickheart;
+
+		sf::Texture h6, m4;
+		h6.loadFromFile("h6.png");
+		sf::Sprite heart;
+		heart.setTexture(h6);
+		heart.setPosition(0, 0);
+
+		m4.loadFromFile("m4.png");
+		sf::Sprite mana;
+		mana.setTexture(m4);
+		mana.setPosition(0, 50);
+
+		//BackGroundAnimation
+		sf::Texture heli1, heli2, texrope;
+		heli1.loadFromFile("helicopterRanimation.png");
+		heli2.loadFromFile("helicopterLanimation.png");
+		texrope.loadFromFile("rope.png");
+		sf::Sprite heliR, heliL[2], rope;
+		heliR.setTexture(heli1);
+		heliL[0].setTexture(heli2);
+		heliL[0].setPosition(7472.0, 15.0);
+		heliL[1].setTexture(heli2);
+		heliL[1].setPosition(8778, 15.0);
+		heliR.setPosition(11567.0, 44.0);
+		Animetion helicopR(&heli1, sf::Vector2u(1, 4), 0.05f);
+		Animetion helicopL(&heli2, sf::Vector2u(1, 4), 0.05f);
+		rope.setTexture(texrope);
+		rope.setPosition(11666.0, 162.0);
+
+		//Clock_use
+		sf::Clock co1; //Lswitch
+		sf::Clock co2; //Jswitch
+		sf::Clock co3; //Ulti
+		sf::Clock dtclock; //deltaTime
+		sf::Clock cmanaClock; //manaGain
+
+
+
+
+
+
 
 		//PlayerObject
 		Player player({ 84.0,112.0 });	
-		player.setPos({ 300.0,600.0 });
+		player.setPos({ 7500.0,600.0 });
+
+		//item
+		Item item;
+		item.setPOs({ 1300.0,380.0 });
 
 		//skillPlayer
 		Skill skilli[16], skillf[16], skillu[16];
@@ -131,132 +195,68 @@ int main()
 		enemy2.setPos({ 1400.0,600.0 });
 		Enemy enemy3(3);
 		enemy3.setPos({ 10.0,450.0 });
-
-
-		//item
-		Item item;
-		item.setPOs({ 1300.0,380.0 });
-
-
-
-
-
-		//timeObject+Stage
-		sf::Font font;
-		font.loadFromFile("BAUHS93.TTF");
-
-		ostringstream showStage;
-		showStage << "Stage 1";
-		sf::Text lblStage;
-		lblStage.setCharacterSize(30);
-		lblStage.setPosition({ 1420,10 });
-		lblStage.setFont(font);
-		lblStage.setString(showStage.str());
-
-		int f2sec = 0, f1min = 0, f2min = 0;
-		sf::Clock clock;
-		sf::Time elapsed = clock.getElapsedTime();
-		ostringstream showTime;
-		showTime << f2min << f1min << ":" << f2sec << (int)elapsed.asSeconds() << ":" << elapsed.asMilliseconds() % 1000 / 10;
-		sf::Text lblTime;
-		lblTime.setCharacterSize(30);
-		lblTime.setPosition({ 1420,50 });
-		lblTime.setFont(font);
-		lblTime.setString(showTime.str());
-
-		sf::Clock co1; //Lswitch
-		sf::Clock co2; //Jswitch
-		sf::Clock co3; //Ulti
-		sf::Clock dtclock; //deltaTime
-		sf::Clock cmanaClock; //manaGain
-
-
-		//Mana+Hp
-
-		ostringstream pickmana;
-		ostringstream pickheart;
 		
-		sf::Texture h6,m4;
-		h6.loadFromFile("h6.png");
-		sf::Sprite heart;
-		heart.setTexture(h6);
-		heart.setPosition(0,0);
 
-		m4.loadFromFile("m4.png");
-		sf::Sprite mana;
-		mana.setTexture(m4);
-		mana.setPosition(0, 50);
+		Block b1;
+		vector<Block> blocks;
 
+		sf::Vector2f pos[30],siz[30];
+		pos[0] = { 5373 ,511 };			//truck
+		pos[1] = { 5531 ,482 };
+		pos[2] = { 5373 + 4478,511 };
+		pos[3] = { 5531 + 4478,482 };
+		pos[4] = { 1543.0,640.5 };		//singCar
+		pos[5] = { 1636,605 };
+		pos[6] = { 1767.5,652.5 };
+		pos[7] = { 1770.5,664.5 };
+		pos[8] = { 1543.0 + 3546,637 };
+		pos[9] = { 5181.5,600.5 };
+		pos[10] = { 3407,559 };			//doubCar
+		pos[11] = { 3506,521 };
+		pos[12] = { 3638.5,567.5 };
+		pos[13] = { 3642,584 };
+		pos[14] = { 3417 + 3749,559 };
+		pos[15] = { 3506 + 3749,521 };
+		pos[16] = { 7391,569 };
+		pos[17] = { 7393,590 };
+		pos[18] = { 7639.5,330 };		//box
+		pos[19] = { 6777,627 };
+		pos[20] = { 9745,613 };
+		pos[21] = { 7540,127 };			//helicopter
+		pos[22] = { 7717,27 };
+		pos[23] = { 8860,24 };
+		pos[24] = { 9037,93 };
+		pos[25] = { 11666.0,620 };		//finish
 
-		sf::Texture heli1, heli2,texrope;
-		heli1.loadFromFile("helicopterRanimation.png");
-		heli2.loadFromFile("helicopterLanimation.png");
-		texrope.loadFromFile("rope.png");
-		sf::Sprite heliR, heliL[2],rope;
-		heliR.setTexture(heli1);
-		heliL[0].setTexture(heli2);
-		heliL[0].setPosition(7472.0,15.0);
-		heliL[1].setTexture(heli2);
-		heliL[1].setPosition(8778, 15.0);
-		heliR.setPosition(11567.0, 44.0);
-		Animetion helicopR(&heli1,sf::Vector2u(1,4),0.05f);
-		Animetion helicopL(&heli2, sf::Vector2u(1, 4), 0.05f);
-		rope.setTexture(texrope);
-		rope.setPosition(11666.0,162.0);
-		
-		
-		
-		Block box[100];
-		box[1].set({ 234.5,93.0 }, { 1543.0,640.5 });
-		/*
-		//block
-		Block finish({168,23}, {11666.0,620});
-
-		Block h1box1({71,9}, { 7548.5,144.5});
-		Block h1box2({149,19}, { 7581.5 ,122.5});
-		Block h1box3({ 40,8 }, { 7728.5  ,119.5  });
-		Block h1box4({ 132,12 }, { 7727.5  ,109.5 });
-		Block h2box1({ 71,9 }, { 8855.5 ,145.5  });
-		Block h2box2({ 149,19 }, { 8888.5  ,123.5  });
-		Block h2box3({40,8}, { 9035.5 ,120.5  });
-		Block h2box4({ 132,12 }, { 9034.5  ,110.5});
-
-		Block woodair({ 1433.0,31.0 }, { 7639.5,330 });			//woodair
-		Block woodbox1({ 103.0,103.0 }, {6777,627});			//woodbox1
-		Block woodbox2({ 103.0,103.0 }, { 9745,613 });			//woodbox2
-
-		//singCar
-		Block b1car1({ 234.5,93.0 }, {1543.0,640.5});				//b1car1
-		Block b2car1({ 16,41 }, { 1636,605 });						//b2car1
-		Block b3car1({ 17,78 }, {1788,645});						//b3car1
-		b3car1.rotate(-30.38);										
-		Block b1car2({ 234.5,93.0 }, { 1543.0 + 3546,640.5 });		//b1car2
-		Block b2car2({ 16,41 }, { 1636 + 3546,605 });				//b2car2
-		Block b3car2({ 17,78 }, { 1788 + 3546,645 });				//b3car2
-		b3car2.rotate(-30.38);
-
-		//doubCar
-		Block d1car1({ 233,175 }, {3417,559});					//d1car1
-		Block d2car1({ 16,41 }, {3506,521});					//d2car1
-		Block d3car1({ 17,78 }, {3655.4,562});					//d3car1
-		d3car1.rotate(-30.38);									
-		Block d4car1({17,78}, {3655,645});						//d4car1
-		d4car1.rotate(-30.38);									
-		Block d1car2({ 233,175 }, { 3417 + 3749,559 });			//d1car2
-		Block d2car2({ 16,41 }, { 3506 + 3749,521 });			//d2car2
-		Block d3car2({ 17,78 }, { 3655.4 + 3749,562 });			//d3car2
-		d3car2.rotate(-30.38);
-		Block d4car2({ 17,78 }, { 3655 + 3749,645 });			//d4car2
-		d4car2.rotate(-30.38);
-
-		//truck
-		Block b1truck1({ 158,216 }, { 5373 ,511 });				//b1truck1
-		Block b2truck1({ 428,250 }, {5531 ,482});				//btruck1
-		Block b1truck2({ 158,216 }, { 5373 + 4478,511 });		//b1truck2
-		Block b2truck2({ 428,250 }, { 5531 + 4478,482 });		//b2truck2
-		*/
+		siz[0] = { 158,216 };			//truck
+		siz[1] = { 428,250 };
+		siz[2] = { 158,216 };
+		siz[3] = { 428,250 };
+		siz[4] = { 234.5,93.0 };		//singCar
+		siz[5] = { 16,41 };
+		siz[6] = { 22,23 };
+		siz[7] = { 38,69 };
+		siz[8] = { 284,93 };
+		siz[9] = { 16,41 };
+		siz[10] = { 243,175 };			//doubCar
+		siz[11] = { 16,41 };
+		siz[12] = { 22,23 };
+		siz[13] = { 35,150 };
+		siz[14] = { 244,175 };
+		siz[15] = { 16,41 };
+		siz[16] = { 25,22 };
+		siz[17] = { 38,139 };
+		siz[18] = { 1433.0,31.0 };		//box
+		siz[19] = { 103.0,103.0 };
+		siz[20] = { 103.0,103.0 };
+		siz[21] = { 190,25 };			//helicopter
+		siz[22] = { 170,104 };
+		siz[23] = { 190,124 };
+		siz[24] = { 145,32 };
+		siz[25] = { 168,23 };			//finish
 
 
+		int size = 0;
 
 		//variableSwitch
 		int isMove = 0, isJump = 0, ulti = 0, faceRight = 1;
@@ -290,8 +290,8 @@ int main()
 				}
 			}
 
-			//runTimeLogic+gameTIme
-			sf::Time elapsed = clock.getElapsedTime();
+			//RunTime
+			elapsed = clock.getElapsedTime();
 			showTime << f2min << f1min << ":" << f2sec << (int)elapsed.asSeconds() << ":" << elapsed.asMilliseconds() % 1000 / 10;
 			if (elapsed.asSeconds() >= 10)
 			{
@@ -311,11 +311,13 @@ int main()
 			lblTime.setString(showTime.str());
 			showTime.str("");
 
-
+			//Cooldown
 			sf::Time Lcool = co1.getElapsedTime();
 			sf::Time Jcool = co2.getElapsedTime();
 			sf::Time Utime = co3.getElapsedTime();
 			sf::Time gainMana = cmanaClock.getElapsedTime();
+
+
 
 
 			//controlKey
@@ -385,13 +387,12 @@ int main()
 				}
 			}
 			
-
-			//Mana_Charge
+			//Mana_Charge & Use
 			if (cmana == manax)
 			{
 				cmanaClock.restart();
 			}
-			if (gainMana.asSeconds()>=2)
+			if (gainMana.asSeconds()>=1.5)
 			{
 				if (cmana < manax)
 				{
@@ -410,6 +411,22 @@ int main()
 			pickheart.str("");
 			*/
 
+			if (size < 100)
+			{
+				b1.set({ pos[size] }, { siz[size] });
+				blocks.push_back(b1);
+				size++;
+			}
+			for (size_t i = 0; i < blocks.size(); i++)
+			{
+				if (player.getGlobalBounds().intersects(blocks[i].getGlobalBounds()))
+				{
+					if (player.getX() - b1.getPos().x >= 0)
+					{
+						Lspeed = 0;
+					}
+				}
+			}
 
 			
 
@@ -553,6 +570,10 @@ int main()
 			}
 
 
+		
+			
+
+
 			
 			
 			
@@ -561,6 +582,20 @@ int main()
 
 			
 			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -607,9 +642,11 @@ int main()
 			window.draw(heliL[0]);
 			window.draw(heliL[1]);
 
-			for (int i = 1; i <= 30; i++)
+			
+
+			for (size_t i = 0; i < blocks.size(); i++)
 			{
-				box[i].toDraw(window);
+				window.draw(blocks[i].body);
 			}
 			/*
 			//blockcheck
@@ -689,14 +726,3 @@ int main()
 	return 0;
 }
 
-bool Colide(Player player,Block block)
-{
-	if (player.getGlobalBounds().intersects(block.getGlobalBounds()))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}

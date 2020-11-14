@@ -6,10 +6,9 @@ class Block
 public:
 	Block()
 	{
-
 	}
 		
-	void set(sf::Vector2f size, sf::Vector2f position)
+	void set(sf::Vector2f position, sf::Vector2f size)
 	{
 		body.setSize(size);
 		body.setPosition(position.x + body.getSize().x / 2, position.y + body.getSize().y / 2);
@@ -32,10 +31,14 @@ public:
 	{
 		window.draw(body);
 	}
+	void setPos(sf::Vector2f pos)
+	{
+		body.setPosition(pos);
+	}
 
 
 
 
-private:
+
 	sf::RectangleShape body;
 };
