@@ -7,34 +7,34 @@
 class Enemy {
 public:
     
-    Enemy(int type) 
+    Enemy() 
     {
         enemy.setSize(sf::Vector2f(120.0,90.0));
         enemy.setOrigin(sf::Vector2f(enemy.getGlobalBounds().width / 2,enemy.getGlobalBounds().height / 2));
-        if (type == 0)
-        {
-            enemy.setFillColor(sf::Color::White);
-            texture.loadFromFile("enemy0.png");
-            enemy.setTexture(&texture);
-        }
-        else if (type == 1)
-        {
-            enemy.setFillColor(sf::Color::Blue);
-            texture.loadFromFile("enemy1.png");
-            enemy.setTexture(&texture);
-        }
-        else if (type == 2)
-        {
-            enemy.setFillColor(sf::Color::Red);
-            texture.loadFromFile("enemy2.png");
-            enemy.setTexture(&texture);
-        }
-        else if (type == 3)
-        {
-            enemy.setFillColor(sf::Color(128, 0, 128));
-            texture.loadFromFile("enemy3.png");
-            enemy.setTexture(&texture);
-        }
+    }
+    void set0()
+    {
+        enemy.setFillColor(sf::Color::White);
+        texture.loadFromFile("enemy0.png");
+        enemy.setTexture(&texture);
+    }
+    void set1()
+    {
+        enemy.setFillColor(sf::Color::Blue);
+        texture.loadFromFile("enemy1.png");
+        enemy.setTexture(&texture);
+    }
+    void set2()
+    {
+        enemy.setFillColor(sf::Color::Red);
+        texture.loadFromFile("enemy2.png");
+        enemy.setTexture(&texture);
+    }
+    void set3()
+    {
+        enemy.setFillColor(sf::Color(128, 0, 128));
+        texture.loadFromFile("enemy3.png");
+        enemy.setTexture(&texture);
     }
 
     void setPos(sf::Vector2f newPos) 

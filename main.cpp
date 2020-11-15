@@ -162,6 +162,7 @@ int main()
 		sf::Clock co1; //Lswitch
 		sf::Clock co2; //Jswitch
 		sf::Clock co3; //Ulti
+		sf::Clock co4; //jumpBlock
 		sf::Clock dtclock; //deltaTime
 		sf::Clock cmanaClock; //manaGain
 
@@ -182,8 +183,8 @@ int main()
 		item.setPOs({ 1300.0,380.0 });
 
 		//skillPlayer
-		Skill skilli[16], skillf[16], skillu[16];
-		for (int i = 1; i <= 15; i++)
+		Skill skilli[12], skillf[12], skillu[12];
+		for (int i = 1; i <= 11; i++)
 		{
 			skilli[i].setColor(sf::Color::Blue);
 			skillf[i].setColor(sf::Color::Red);
@@ -191,15 +192,9 @@ int main()
 		}
 
 		//enemy
-		Enemy enemy0(0);
-		enemy0.setPos({ 0.0,600.0 });
-		Enemy enemy1(1);
-		enemy1.setPos({ 1400.0, 450.0 });
-		Enemy enemy2(2);
-		enemy2.setPos({ 1400.0,600.0 });
-		Enemy enemy3(3);
-		enemy3.setPos({ 10.0,450.0 });
-
+		Enemy enemy[10];
+		enemy[0].set0();
+		enemy[0].setPos({ 2500,650 });
 
 
 		Block b1;
@@ -267,18 +262,22 @@ int main()
 		int isMove = 0, isJump = 0, ulti = 0, faceRight = 1;
 
 		//variableSkill
-		int change = 0, isSkilli[16], isSkillf[16], isSkillu[16], scount = 0, sdir[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+		int change = 0, isSkilli[12], isSkillf[12], isSkillu[12], scount = 0, sdir[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 };
 		int cmana=4,manax=4;
 
 		//variablePlayerDoing
 		float speed = 600.0f, Yspeed, retard = 25.0f,fallspeed=0,Rspeed=600.0f,Lspeed=600.0f;
 		int  onGround = 1, groundHeigh = 662,boxx=0;
 
+		//Heart
 		int cheart = 6;
 
 		//block
 		float dx, dy;
 		float intersectX,intersectY;
+
+		//enemy
+		int loopEnemy=0;
 
 		
 		//------------------------------------------------------IN Game stage I------------------------
@@ -298,7 +297,6 @@ int main()
 					break;
 				}
 			}
-
 			//RunTime
 			elapsed = clock.getElapsedTime();
 			showTime << f2min << f1min << ":" << f2sec << (int)elapsed.asSeconds() << ":" << elapsed.asMilliseconds() % 1000 / 10;
@@ -324,13 +322,14 @@ int main()
 			sf::Time Lcool = co1.getElapsedTime();
 			sf::Time Jcool = co2.getElapsedTime();
 			sf::Time Utime = co3.getElapsedTime();
+			sf::Time JumpCool = co4.getElapsedTime();
 			sf::Time gainMana = cmanaClock.getElapsedTime();
 
 
 
 			
 			//controlKey
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) )
 			{
 				if (onGround == 1)
 				{
@@ -377,7 +376,21 @@ int main()
 
 					co2.restart();
 					sBang.play();
+
+					//ReDirect+Posi Skill
 					scount += 1;
+					if (scount == 12)
+					{
+						for (int i = 1; i <= 11; i++)
+						{
+							sdir[i] = 0;
+							skilli[i].setPos({ -50,-50});
+							skillf[i].setPos({ -50,-50 });
+							skillu[i].setPos({ -50,-50 });
+						}
+						scount = 1;
+					}
+
 					if (ulti == 1)
 					{
 						skillu[scount].setPos({ player.getX() , player.getY()-5});
@@ -411,7 +424,7 @@ int main()
 			{
 				cmanaClock.restart();
 			}
-			if (gainMana.asSeconds()>=1.5)
+			if (gainMana.asSeconds()>=1)
 			{
 				if (cmana < manax)
 				{
@@ -424,23 +437,17 @@ int main()
 				}
 			}
 
-			/*
-			cheart -= 1;
-			pickheart << "h" << cheart << ".png";
-			h6.loadFromFile(pickheart.str());
-			pickheart.str("");
-			*/
 
 
 
-
-			//CheckBlock
+			//BlockSet;
 			if (size < 27)
 			{
 				b1.set({ pos[size] }, { siz[size] });
 				blocks.push_back(b1);
 				size++;
 			}
+			//CheckBlock_Collide
 			for (size_t i = 0; i < blocks.size(); i++)
 			{
 				if (player.getGlobalBounds().intersects(blocks[i].getGlobalBounds()))
@@ -480,8 +487,24 @@ int main()
 						}
 						else
 						{
-
+							Yspeed = 50.0f;
+							isJump = 0;
 						}
+					}
+				}
+				for (int j = 1; j <= scount; j++)
+				{
+					if (skillf[j].getGlobalBounds().intersects(blocks[i].getGlobalBounds()))
+					{
+						skillf[j].setPos({ -50,-50 });
+					}
+					if (skilli[j].getGlobalBounds().intersects(blocks[i].getGlobalBounds()))
+					{
+						skilli[j].setPos({ -50,-50 });
+					}
+					if (skillu[j].getGlobalBounds().intersects(blocks[i].getGlobalBounds()))
+					{
+						skillu[j].setPos({ -50,-50 });
 					}
 				}
 			}
@@ -515,12 +538,18 @@ int main()
 			{
 				Yspeed += 25.0f;
 				player.moveY(Yspeed* dt);
+				if (player.getY() >= groundHeigh - 1)
+				{
+					onGround = 1;
+				}
 			}
+
+			
 			
 			
 
 						
-
+		
 			//skill+kill
 
 			for (int i = 1; i <= scount; i++)
@@ -539,26 +568,6 @@ int main()
 					{
 						skillu[i].move(-(speed + 500) * dt);
 					}
-					if (enemy0.getGlobalBounds().intersects(skillu[i].getGlobalBounds()))
-					{
-						skillu[i].setPos({ -50.0f,-50.0f });
-						enemy0.setPos({ -200.0f,-200.0f });
-					}
-					if (enemy1.getGlobalBounds().intersects(skillu[i].getGlobalBounds()))
-					{
-						skillu[i].setPos({ -50.0f,-50.0f });
-						enemy1.setPos({ -200.0f,-200.0f });
-					}
-					if (enemy2.getGlobalBounds().intersects(skillu[i].getGlobalBounds()))
-					{
-						skillu[i].setPos({ -50.0f,-50.0f });
-						enemy2.setPos({ -200.0f,-200.0f });
-					}
-					if (enemy3.getGlobalBounds().intersects(skillu[i].getGlobalBounds()))
-					{
-						skillu[i].setPos({ -50.0f,-50.0f });
-						enemy3.setPos({ -200.0f,-200.0f });
-					}
 				}
 				if (isSkilli[i] == 1)
 				{
@@ -574,16 +583,7 @@ int main()
 					{
 						skilli[i].move(-(speed + 500) * dt);
 					}
-					if (enemy0.getGlobalBounds().intersects(skilli[i].getGlobalBounds()))
-					{
-						skilli[i].setPos({ -50.0f,-50.0f });
-						enemy0.setPos({ -200.0f,-200.0f });
-					}
-					if (enemy1.getGlobalBounds().intersects(skilli[i].getGlobalBounds()))
-					{
-						skilli[i].setPos({ -50.0f,-50.0f });
-						enemy1.setPos({ -200.0f,-200.0f });
-					}
+					
 
 				}
 				if (isSkillf[i] == 1)
@@ -600,39 +600,38 @@ int main()
 					{
 						skillf[i].move(-(speed + 500) * dt);
 					}
-					if (enemy0.getGlobalBounds().intersects(skillf[i].getGlobalBounds()))
-					{
-						skillf[i].setPos({ -50.0f,-50.0f });
-						enemy0.setPos({ -200.0f,-200.0f });
-					}
-					if (enemy2.getGlobalBounds().intersects(skillf[i].getGlobalBounds()))
-					{
-						skillf[i].setPos({ -50.0f,-50.0f });
-						enemy2.setPos({ -200.0f,-200.0f });
-					}
+					
 				}
 			}
-			if (scount == 15)
-			{
-				for (int i = 1; i <= 15; i++)
-				{
-					sdir[i] = 0;
-				}
-				scount = 1;
-				//close_isSkill
-			}
 
-
+			//ItemCollect
 			if (player.getGlobalBounds().intersects(item.getGlobalBounds()))
 			{
 				co3.restart();
 				item.setPOs({ -50.0f,-50.0f });
 				ulti = 1;
 			}
+			//Ultimate
 			if (Utime.asSeconds() >= 12)
 			{
 				ulti = 0;
 				co3.restart();
+			}
+
+
+
+			//EnemyCollide_Player
+			if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+			{
+				cheart -= 1;
+				pickheart << "h" << cheart << ".png";
+				h6.loadFromFile(pickheart.str());
+				pickheart.str("");
+			}
+			loopEnemy += 1;
+			if (loopEnemy == 10)
+			{
+				loopEnemy = 0;
 			}
 
 
@@ -718,6 +717,10 @@ int main()
 				skillf[i].toDraw(window);
 				skillu[i].toDraw(window);
 			}
+			for (int i = 0; i < 1; i++)
+			{
+				enemy[i].toDraw(window);
+			}
 
 			window.draw(heart);
 			window.draw(mana);
@@ -725,10 +728,7 @@ int main()
 			window.draw(lblTime);
 			
 
-			//enemy0.toDraw(window);
-			//enemy1.toDraw(window);
-			//enemy2.toDraw(window);
-			//enemy3.toDraw(window);
+			
 
 			item.toDraw(window);
 
