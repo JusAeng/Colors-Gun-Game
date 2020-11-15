@@ -1,5 +1,7 @@
 #include <iostream>
 #include <sstream>
+#include <vector>
+#include <math.h>
 #include "Player.h"
 #include "Enemy.h"
 #include "Game.h"
@@ -89,7 +91,7 @@ int main()
 		//main music
 		sf::Music music;
 		music.openFromFile("mainSong.ogg");
-		music.setVolume(10.0);
+		music.setVolume(5.0);
 		music.play();
 
 		//skill music
@@ -170,8 +172,10 @@ int main()
 
 
 		//PlayerObject
-		Player player({ 84.0,112.0 });	
-		player.setPos({ 7500.0,600.0 });
+		Player player({ 84.0,112.0 });
+		player.setOrigin();
+		player.setPos({ 300.0,664.0 });
+		sf::Vector2f playerHalf = player.getSize()/2.0f;
 
 		//item
 		Item item;
@@ -195,12 +199,13 @@ int main()
 		enemy2.setPos({ 1400.0,600.0 });
 		Enemy enemy3(3);
 		enemy3.setPos({ 10.0,450.0 });
-		
+
+
 
 		Block b1;
 		vector<Block> blocks;
 
-		sf::Vector2f pos[30],siz[30];
+		sf::Vector2f pos[26],siz[26];
 		pos[0] = { 5373 ,511 };			//truck
 		pos[1] = { 5531 ,482 };
 		pos[2] = { 5373 + 4478,511 };
@@ -266,10 +271,14 @@ int main()
 		int cmana=4,manax=4;
 
 		//variablePlayerDoing
-		float speed = 600.0f, gravitySpeed, retard = 25.0f,fallspeed=0,Rspeed=600.0f,Lspeed=600.0f;
-		int  onGround = 1, groundHeigh = 600,onBox=0;
+		float speed = 600.0f, Yspeed, retard = 25.0f,fallspeed=0,Rspeed=600.0f,Lspeed=600.0f;
+		int  onGround = 1, groundHeigh = 662,boxx=0;
 
 		int cheart = 6;
+
+		//block
+		float dx, dy;
+		float intersectX,intersectY;
 
 		
 		//------------------------------------------------------IN Game stage I------------------------
@@ -319,7 +328,7 @@ int main()
 
 
 
-
+			
 			//controlKey
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 			{
@@ -328,7 +337,7 @@ int main()
 					sJump.play();
 					isJump = 1;
 					onGround = 0;
-					gravitySpeed = -750.0f;
+					Yspeed = -750.0f;
 				}
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
@@ -371,20 +380,30 @@ int main()
 					scount += 1;
 					if (ulti == 1)
 					{
-						skillu[scount].setPos({ player.getX() + 30.0f, player.getY() + 53.0f });
+						skillu[scount].setPos({ player.getX() , player.getY()-5});
 						isSkillu[scount] = 1;
 					}
 					else if (change == 0)
 					{
-						skilli[scount].setPos({ player.getX() + 30.0f, player.getY() + 53.0f });
+						skilli[scount].setPos({ player.getX() , player.getY()-5 });
 						isSkilli[scount] = 1;
 					}
 					else
 					{
-						skillf[scount].setPos({ player.getX() + 30.0f, player.getY() + 53.0f });
+						skillf[scount].setPos({ player.getX() , player.getY()-5 });
 						isSkillf[scount] = 1;
 					}
 				}
+			}
+
+			//Cant move LimitMap
+			if (player.getX()-player.getSize().x/2.0f <= 0)
+			{
+				Lspeed = 0;
+			}
+			if (player.getX() + player.getSize().x / 2.0f >= 11999)
+			{
+				Rspeed = 0;
 			}
 			
 			//Mana_Charge & Use
@@ -404,6 +423,7 @@ int main()
 					cmanaClock.restart();
 				}
 			}
+
 			/*
 			cheart -= 1;
 			pickheart << "h" << cheart << ".png";
@@ -411,7 +431,11 @@ int main()
 			pickheart.str("");
 			*/
 
-			if (size < 100)
+
+
+
+			//CheckBlock
+			if (size < 27)
 			{
 				b1.set({ pos[size] }, { siz[size] });
 				blocks.push_back(b1);
@@ -421,14 +445,48 @@ int main()
 			{
 				if (player.getGlobalBounds().intersects(blocks[i].getGlobalBounds()))
 				{
-					if (player.getX() - b1.getPos().x >= 0)
+					dx = player.getX() - blocks[i].getPos().x;
+					dy = player.getY() - blocks[i].getPos().y;
+					float intersectX = abs(dx) - (playerHalf.x + blocks[i].getSize().x / 2.0f);
+					float intersectY = abs(dy) - (playerHalf.y + blocks[i].getSize().y / 2.0f);
+					if (intersectX > intersectY)
 					{
-						Lspeed = 0;
+						if (dx > 0.0f)
+						{
+							Lspeed = 0;
+						}
+						else
+						{
+							Rspeed = 0;
+						}
+					}
+					else
+					{
+						if (dy < 0.0f)
+						{
+							isJump = 0;
+							onGround = 1;
+							Yspeed = -25.0f;
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+							{
+								if (onGround == 1)
+								{
+									sJump.play();
+									isJump = 1;
+									onGround = 0;
+									Yspeed = -750.0f;
+								}
+							}
+						}
+						else
+						{
+
+						}
 					}
 				}
 			}
 
-			
+
 
 			//playerDoing
 
@@ -444,8 +502,8 @@ int main()
 			}
 			if (isJump == 1 && onGround == 0)
 			{
-				player.jump(gravitySpeed * dt);
-				gravitySpeed += retard;
+				player.moveY(Yspeed * dt);
+				Yspeed += retard;
 
 				if (player.getY() >= groundHeigh)
 				{
@@ -453,6 +511,13 @@ int main()
 					isJump = 0;
 				}
 			}
+			if (isJump == 0 && player.getY() < groundHeigh)
+			{
+				Yspeed += 25.0f;
+				player.moveY(Yspeed* dt);
+			}
+			
+			
 
 						
 
@@ -567,6 +632,7 @@ int main()
 			if (Utime.asSeconds() >= 12)
 			{
 				ulti = 0;
+				co3.restart();
 			}
 
 
@@ -610,28 +676,26 @@ int main()
 			{
 				position.x = 0;
 			}
+			if (position.x >= 10439)
+			{
+				position.x = 10440;
+			}
 			if (position.y < 0)
 			{
 				position.y = 0;
 			}
-
 			view.reset(sf::FloatRect(position.x, position.y, window.getSize().x, window.getSize().y));
-			
-			
-			
 			lblStage.setPosition({position.x+1420.0f,10.0f});
 			lblTime.setPosition({ position.x + 1420.0f,50.0f });
-
 			heart.setPosition(10 + position.x, 10);
 			mana.setPosition(19+position.x,57);
 
 			//ToDraw
 			window.clear();
-
+			window.setView(view);
 			window.draw(bground);
 			
-			window.setView(view);
-
+			
 			window.draw(rope);
 			helicopR.Update(0,dt);
 			heliR.setTextureRect(helicopR.uvRect);
@@ -641,52 +705,12 @@ int main()
 			heliL[1].setTextureRect(helicopL.uvRect);
 			window.draw(heliL[0]);
 			window.draw(heliL[1]);
-
 			
 
-			for (size_t i = 0; i < blocks.size(); i++)
+			/*for (size_t i = 0; i < blocks.size(); i++)
 			{
 				window.draw(blocks[i].body);
-			}
-			/*
-			//blockcheck
-			woodair.toDraw(window);
-			woodbox1.toDraw(window);
-			woodbox2.toDraw(window);
-
-			h1box1.toDraw(window);
-			h1box2.toDraw(window);
-			h1box3.toDraw(window);
-			h1box4.toDraw(window);
-			h2box1.toDraw(window);
-			h2box2.toDraw(window);
-			h2box3.toDraw(window);
-			h2box4.toDraw(window);
-
-			b1car1.toDraw(window);
-			b2car1.toDraw(window);
-			b3car1.toDraw(window);
-			b1car2.toDraw(window);
-			b2car2.toDraw(window);
-			b3car2.toDraw(window);
-
-			d1car1.toDraw(window);
-			d2car1.toDraw(window);
-			d3car1.toDraw(window);
-			d4car1.toDraw(window);
-			d1car2.toDraw(window);
-			d2car2.toDraw(window);
-			d3car2.toDraw(window);
-			d4car2.toDraw(window);
-
-			b1truck1.toDraw(window);
-			b2truck1.toDraw(window);
-			b1truck2.toDraw(window);
-			b2truck2.toDraw(window);
-
-			finish.toDraw(window);
-			//--------------------
-			*/
+			}*/
 
 			for (int i = 1; i <= scount; i++)
 			{
@@ -721,6 +745,7 @@ int main()
 			
 		}
 	}
+
 
 
 	return 0;

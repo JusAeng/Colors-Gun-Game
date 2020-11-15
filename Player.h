@@ -30,6 +30,10 @@ public:
     {
         return player.getGlobalBounds();
     }
+    sf::Vector2f getSize()
+    {
+        return player.getSize();
+    }
     void setOrigin()
     {
         player.setOrigin(sf::Vector2f(player.getGlobalBounds().width/2,player.getGlobalBounds().height/2));
@@ -49,22 +53,19 @@ public:
 
     //control
 
-    void moveLeft(float speed)
+    void moveLeft(float Lspeed)
     {
-        player.move(-speed, 0.0f);
+        player.move(-Lspeed, 0.0f);
     }
-    void moveRight(float speed)
+    void moveRight(float Rspeed)
     {
-        player.move(speed, 0.0f);
+        player.move(Rspeed, 0.0f);
     }
-    void jump(float gravitySpeed)
+    void moveY(float Yspeed)
     {
-        player.move(0.0f, gravitySpeed);
+        player.move(0.0f, Yspeed);
     }
-    void fall(float down)
-    {
-        player.move(0.0f,down );
-    }
+    
     
 
     //colliding

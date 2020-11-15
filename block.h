@@ -19,6 +19,10 @@ public:
 	{
 		return body.getGlobalBounds();
 	}
+	sf::Vector2f getSize()
+	{
+		return body.getSize();
+	}
 	sf::Vector2f getPos()
 	{
 		return body.getPosition();
