@@ -270,7 +270,7 @@ int main()
 		int  onGround = 1, groundHeigh = 662,boxx=0;
 
 		//Heart
-		int cheart = 6;
+		int cheart = 6,hert=0,hertspeed=0;
 
 		//block
 		float dx, dy;
@@ -441,7 +441,7 @@ int main()
 
 
 			//BlockSet;
-			if (size < 27)
+			if (size < 26)
 			{
 				b1.set({ pos[size] }, { siz[size] });
 				blocks.push_back(b1);
@@ -510,6 +510,108 @@ int main()
 			}
 
 
+			//EnemyCollide_Player
+			if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+			{
+				cheart -= 1;
+				pickheart << "h" << cheart << ".png";
+				h6.loadFromFile(pickheart.str());
+				pickheart.str("");
+				hert = 1;
+				hertspeed = 1000.0f;
+
+			}
+			loopEnemy += 1;
+			if (loopEnemy == 10)
+			{
+				loopEnemy = 0;
+			}
+			if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+			{
+				cheart -= 1;
+				pickheart << "h" << cheart << ".png";
+				h6.loadFromFile(pickheart.str());
+				pickheart.str("");
+				hert = 1;
+				hertspeed = 1000.0f;
+
+			}
+			loopEnemy += 1;
+			if (loopEnemy == 10)
+			{
+				loopEnemy = 0;
+			}
+			if (hert == 1 && hertspeed >= 0)
+			{
+				player.moveLeft(hertspeed * dt);
+				hertspeed -= 35.0f;
+				Rspeed = 0;
+			}
+			
+			//checkSkill_vsEnemys
+			for (int j = 1; j <= scount; j++)
+			{
+				//white
+				for (int i = 0; i <= 9; i++)
+				{
+					if (skillf[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+					{
+						enemy[i].setPos({-300,-300});
+						skillf[j].setPos({ -50,-50 });
+					}
+					if (skilli[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+					{
+						enemy[i].setPos({ -300,-300 });
+						skilli[j].setPos({ -50,-50 });
+					}
+					if (skillu[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+					{
+						enemy[i].setPos({ -300,-300 });
+						skillu[j].setPos({ -50,-50 });
+					}
+				}
+				//red
+				for (int i = 0; i <= 9; i++)
+				{
+					if (skillf[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+					{
+						enemy[i].setPos({ -300,-300 });
+						skillf[j].setPos({ -50,-50 });
+					}
+					if (skillu[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+					{
+						enemy[i].setPos({ -300,-300 });
+						skillu[j].setPos({ -50,-50 });
+					}
+				}
+				//blue
+				for (int i = 0; i <= 9; i++)
+				{
+					if (skilli[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+					{
+						enemy[i].setPos({ -300,-300 });
+						skilli[j].setPos({ -50,-50 });
+					}
+					if (skillu[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+					{
+						enemy[i].setPos({ -300,-300 });
+						skillu[j].setPos({ -50,-50 });
+					}
+				}
+				//violet
+				for (int i = 0; i <= 9; i++)
+				{
+					if (skillu[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+					{
+						enemy[i].setPos({ -300,-300 });
+						skillu[j].setPos({ -50,-50 });
+					}
+				}
+			}
+
+
+
+
 
 			//playerDoing
 
@@ -544,11 +646,8 @@ int main()
 				}
 			}
 
-			
-			
-			
 
-						
+				
 		
 			//skill+kill
 
@@ -584,7 +683,6 @@ int main()
 						skilli[i].move(-(speed + 500) * dt);
 					}
 					
-
 				}
 				if (isSkillf[i] == 1)
 				{
@@ -620,19 +718,7 @@ int main()
 
 
 
-			//EnemyCollide_Player
-			if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
-			{
-				cheart -= 1;
-				pickheart << "h" << cheart << ".png";
-				h6.loadFromFile(pickheart.str());
-				pickheart.str("");
-			}
-			loopEnemy += 1;
-			if (loopEnemy == 10)
-			{
-				loopEnemy = 0;
-			}
+			
 
 
 		
