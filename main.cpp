@@ -176,7 +176,7 @@ int main()
 		Player player({ 84.0,112.0 });
 		player.setOrigin();
 		player.setPos({ 300.0,664.0 });
-		sf::Vector2f playerHalf = player.getSize()/2.0f;
+		sf::Vector2f playerHalf = player.getSize() / 2.0f;
 
 		//item
 		Item item;
@@ -195,12 +195,14 @@ int main()
 		Enemy enemy[10];
 		enemy[0].set0();
 		enemy[0].setPos({ 2500,650 });
+		enemy[8].set3();
+		enemy[8].setPos({ 3000,650 });
 
 
 		Block b1;
 		vector<Block> blocks;
 
-		sf::Vector2f pos[26],siz[26];
+		sf::Vector2f pos[26], siz[26];
 		pos[0] = { 5373 ,511 };			//truck
 		pos[1] = { 5531 ,482 };
 		pos[2] = { 5373 + 4478,511 };
@@ -255,6 +257,13 @@ int main()
 		siz[24] = { 145,32 };
 		siz[25] = { 168,23 };			//finish
 
+		sf::RectangleShape woodh;
+		sf::Texture woodd;
+		woodd.loadFromFile("woodd.png");
+		woodh.setTexture(&woodd);
+		woodh.setSize(sf::Vector2f(1442.0f, 38.0f));
+		woodh.setPosition(7640, 330);
+
 
 		int size = 0;
 
@@ -263,23 +272,23 @@ int main()
 
 		//variableSkill
 		int change = 0, isSkilli[12], isSkillf[12], isSkillu[12], scount = 0, sdir[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 };
-		int cmana=4,manax=4;
+		int cmana = 4, manax = 4;
 
 		//variablePlayerDoing
-		float speed = 600.0f, Yspeed, retard = 25.0f,fallspeed=0,Rspeed=600.0f,Lspeed=600.0f;
-		int  onGround = 1, groundHeigh = 662,boxx=0;
+		float speed = 600.0f, Yspeed, retard = 25.0f, fallspeed = 0, Rspeed = 600.0f, Lspeed = 600.0f;
+		int  onGround = 1, groundHeigh = 662, boxx = 0;
 
 		//Heart
-		int cheart = 6,hert=0,hertspeed=0;
+		int cheart = 6, hert = 0, hertspeed = 0;
 
 		//block
 		float dx, dy;
-		float intersectX,intersectY;
+		float intersectX, intersectY;
 
 		//enemy
-		int loopEnemy=0;
+		int loopEnemy = 0;
 
-		
+
 		//------------------------------------------------------IN Game stage I------------------------
 		while (window.isOpen())
 		{
@@ -327,9 +336,9 @@ int main()
 
 
 
-			
+
 			//controlKey
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) )
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 			{
 				if (onGround == 1)
 				{
@@ -384,7 +393,7 @@ int main()
 						for (int i = 1; i <= 11; i++)
 						{
 							sdir[i] = 0;
-							skilli[i].setPos({ -50,-50});
+							skilli[i].setPos({ -50,-50 });
 							skillf[i].setPos({ -50,-50 });
 							skillu[i].setPos({ -50,-50 });
 						}
@@ -393,24 +402,24 @@ int main()
 
 					if (ulti == 1)
 					{
-						skillu[scount].setPos({ player.getX() , player.getY()-5});
+						skillu[scount].setPos({ player.getX() , player.getY() - 5 });
 						isSkillu[scount] = 1;
 					}
 					else if (change == 0)
 					{
-						skilli[scount].setPos({ player.getX() , player.getY()-5 });
+						skilli[scount].setPos({ player.getX() , player.getY() - 5 });
 						isSkilli[scount] = 1;
 					}
 					else
 					{
-						skillf[scount].setPos({ player.getX() , player.getY()-5 });
+						skillf[scount].setPos({ player.getX() , player.getY() - 5 });
 						isSkillf[scount] = 1;
 					}
 				}
 			}
 
 			//Cant move LimitMap
-			if (player.getX()-player.getSize().x/2.0f <= 0)
+			if (player.getX() - player.getSize().x / 2.0f <= 0)
 			{
 				Lspeed = 0;
 			}
@@ -418,13 +427,13 @@ int main()
 			{
 				Rspeed = 0;
 			}
-			
+
 			//Mana_Charge & Use
 			if (cmana == manax)
 			{
 				cmanaClock.restart();
 			}
-			if (gainMana.asSeconds()>=1)
+			if (gainMana.asSeconds() >= 1)
 			{
 				if (cmana < manax)
 				{
@@ -513,29 +522,30 @@ int main()
 			//EnemyCollide_Player
 			if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
 			{
-				cheart -= 1;
-				pickheart << "h" << cheart << ".png";
-				h6.loadFromFile(pickheart.str());
-				pickheart.str("");
+				if (loopEnemy <= 7)
+				{
+					cheart -= 1;
+					pickheart << "h" << cheart << ".png";
+					h6.loadFromFile(pickheart.str());
+					pickheart.str("");
+				}
+				else
+				{
+					cheart -= 2;
+					pickheart << "h" << cheart << ".png";
+					h6.loadFromFile(pickheart.str());
+					pickheart.str("");
+				}
 				hert = 1;
 				hertspeed = 1000.0f;
-
 			}
-			loopEnemy += 1;
-			if (loopEnemy == 10)
+			if (cheart <= 0)
 			{
-				loopEnemy = 0;
+				break;
 			}
-			if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
-			{
-				cheart -= 1;
-				pickheart << "h" << cheart << ".png";
-				h6.loadFromFile(pickheart.str());
-				pickheart.str("");
-				hert = 1;
-				hertspeed = 1000.0f;
 
-			}
+
+
 			loopEnemy += 1;
 			if (loopEnemy == 10)
 			{
@@ -547,7 +557,8 @@ int main()
 				hertspeed -= 35.0f;
 				Rspeed = 0;
 			}
-			
+
+
 			//checkSkill_vsEnemys
 			for (int j = 1; j <= scount; j++)
 			{
@@ -556,7 +567,7 @@ int main()
 				{
 					if (skillf[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
 					{
-						enemy[i].setPos({-300,-300});
+						enemy[i].setPos({ -300,-300 });
 						skillf[j].setPos({ -50,-50 });
 					}
 					if (skilli[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
@@ -639,7 +650,7 @@ int main()
 			if (isJump == 0 && player.getY() < groundHeigh)
 			{
 				Yspeed += 25.0f;
-				player.moveY(Yspeed* dt);
+				player.moveY(Yspeed * dt);
 				if (player.getY() >= groundHeigh - 1)
 				{
 					onGround = 1;
@@ -647,9 +658,9 @@ int main()
 			}
 
 
-				
-		
-			//skill+kill
+
+
+			//skillDirect
 
 			for (int i = 1; i <= scount; i++)
 			{
@@ -682,7 +693,7 @@ int main()
 					{
 						skilli[i].move(-(speed + 500) * dt);
 					}
-					
+
 				}
 				if (isSkillf[i] == 1)
 				{
@@ -698,7 +709,7 @@ int main()
 					{
 						skillf[i].move(-(speed + 500) * dt);
 					}
-					
+
 				}
 			}
 
@@ -718,21 +729,21 @@ int main()
 
 
 
-			
 
 
-		
-			
 
 
-			
-			
-			
 
-			
 
-			
-			
+
+
+
+
+
+
+
+
+
 
 
 
@@ -770,19 +781,19 @@ int main()
 				position.y = 0;
 			}
 			view.reset(sf::FloatRect(position.x, position.y, window.getSize().x, window.getSize().y));
-			lblStage.setPosition({position.x+1420.0f,10.0f});
+			lblStage.setPosition({ position.x + 1420.0f,10.0f });
 			lblTime.setPosition({ position.x + 1420.0f,50.0f });
 			heart.setPosition(10 + position.x, 10);
-			mana.setPosition(19+position.x,57);
+			mana.setPosition(19 + position.x, 57);
 
 			//ToDraw
 			window.clear();
 			window.setView(view);
 			window.draw(bground);
-			
-			
+
+
 			window.draw(rope);
-			helicopR.Update(0,dt);
+			helicopR.Update(0, dt);
 			heliR.setTextureRect(helicopR.uvRect);
 			window.draw(heliR);
 			helicopL.Update(0, dt);
@@ -790,12 +801,13 @@ int main()
 			heliL[1].setTextureRect(helicopL.uvRect);
 			window.draw(heliL[0]);
 			window.draw(heliL[1]);
-			
+
 
 			/*for (size_t i = 0; i < blocks.size(); i++)
 			{
 				window.draw(blocks[i].body);
 			}*/
+			window.draw(woodh);
 
 			for (int i = 1; i <= scount; i++)
 			{
@@ -807,14 +819,15 @@ int main()
 			{
 				enemy[i].toDraw(window);
 			}
+			enemy[8].toDraw(window);
 
 			window.draw(heart);
 			window.draw(mana);
 			window.draw(lblStage);
 			window.draw(lblTime);
-			
 
-			
+
+
 
 			item.toDraw(window);
 
@@ -828,12 +841,12 @@ int main()
 			}
 			//Draw
 			window.display();
-			
+
 		}
 	}
 
 
-
+	
 	return 0;
 }
 
