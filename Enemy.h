@@ -149,7 +149,7 @@ private:
     int direct1 = -1;
     float speed1 = 400;
 
-    float speed2 = 800;
+    float speed2 = 1200;
     float Yspeed2 = 800;
     float fall2 = 0;
     float retard2 = 25;
