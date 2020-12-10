@@ -23,7 +23,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1560, 780), "JusGame", sf::Style::Close| sf::Style::Resize);
 	sf::Event ev;
 
-	int stage = 2,ename=0,dead=0;
+	int stage = 3,ename=0,dead=0;
 
 	Menu menu(window.getSize().x, window.getSize().y);
 
@@ -437,12 +437,12 @@ int main()
 				}
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::L))
 				{
-					if (change == 0 && (Lcool.asSeconds() >= 0.5))
+					if (change == 0 && (Lcool.asSeconds() >= 0.2))
 					{
 						change = 1;
 						co1.restart();
 					}
-					else if (change == 1 && (Lcool.asSeconds() >= 0.5))
+					else if (change == 1 && (Lcool.asSeconds() >= 0.2))
 					{
 						change = 0;
 						co1.restart();
@@ -935,7 +935,7 @@ int main()
 					ulti = 1;
 				}
 				//Ultimate
-				if (Utime.asSeconds() >= 12)
+				if (Utime.asSeconds() >= 10)
 				{
 					ulti = 0;
 					co3.restart();
@@ -1191,35 +1191,53 @@ int main()
 			}
 
 			//enemy
-			Enemy enemy[12];
+			Enemy enemy[21];
 			//White
 			enemy[0].set0();
-			enemy[0].setPos({ 2452,670 });
+			enemy[0].setPos({ 6256,380 });
 			enemy[1].set0();
-			enemy[1].setPos({ 9350,670 });
+			enemy[1].setPos({ 8025,670 });
+			enemy[2].set0();
+			enemy[2].setPos({10200,670 });
+			enemy[3].set0();
+			enemy[3].setPos({ 11094,510 });
 			//Blue
-			enemy[2].set1();
-			enemy[2].setPos({ 4360,670 });
-			enemy[3].set1();
-			enemy[3].setPos({ 4680,670 });
 			enemy[4].set1();
-			enemy[4].setPos({ 8590, 285 });
+			enemy[4].setPos({ 3898,670 });
+			enemy[5].set1();
+			enemy[5].setPos({ 4070,670 });
+			enemy[6].set1();
+			enemy[6].setPos({ 5727, 440 });
+			enemy[7].set1();
+			enemy[7].setPos({ 8798,670 });
+			enemy[8].set1();
+			enemy[8].setPos({ 11288,510 });
+			enemy[9].set1();
+			enemy[9].setPos({ 12037, 670 });
 			//Red
-			enemy[5].set2();
-			enemy[5].setPos({ 3115,670 });
-			enemy[6].set2();
-			enemy[6].setPos({ 4515,670 });
-			enemy[7].set2();
-			enemy[7].setPos({ 9120,670 });
-			enemy[8].set2();
-			enemy[8].setPos({ 11100,670 });
+			enemy[10].set2();
+			enemy[10].setPos({ 2391,420 });
+			enemy[11].set2();
+			enemy[11].setPos({ 3726,670 });
+			enemy[12].set2();
+			enemy[12].setPos({ 3910,328 });
+			enemy[13].set2();
+			enemy[13].setPos({ 6775,280 });
+			enemy[14].set2();
+			enemy[14].setPos({ 9469,670 });
+			enemy[15].set2();
+			enemy[15].setPos({ 10900,510 });
+			enemy[16].set2();
+			enemy[16].setPos({ 11475,400 });
+			enemy[17].set2();
+			enemy[17].setPos({ 11865,670 });
 			//Violet
-			enemy[9].set3();
-			enemy[9].setPos({ 5693,590 });
-			enemy[10].set3();
-			enemy[10].setPos({ 9560,670 });
-			enemy[11].set3();
-			enemy[11].setPos({ 10240,590 });
+			enemy[18].set3();
+			enemy[18].setPos({ 1542,590 });
+			enemy[19].set3();
+			enemy[19].setPos({ 13691,590 });
+			enemy[20].set3();
+			enemy[20].setPos({ 16000,670 });
 
 
 			Block b1;
@@ -1363,7 +1381,917 @@ int main()
 			int loopEnemy = 0, ebus2 = 0, dashgo1 = 0, dashgo2 = 0, jumppoint1 = 0, jumppoint2 = 0, downpoint1 = 0, downpoint2 = 0;
 
 
-			//------------------------------------------------------IN Game stage I------------------------
+			//------------------------------------------------------IN Game stage II------------------------
+			while (window.isOpen())
+			{
+				dt = dtclock.restart().asSeconds();
+				while (window.pollEvent(ev))
+				{
+					switch (ev.type)
+					{
+					case sf::Event::Closed:
+						window.close();
+						break;
+					case sf::Event::KeyPressed:
+						if (ev.key.code == sf::Keyboard::Escape)
+							window.close();
+						break;
+					}
+				}
+				//RunTime
+				elapsed = clock.getElapsedTime();
+				showTime << f2min << f1min << ":" << f2sec << (int)elapsed.asSeconds() << ":" << elapsed.asMilliseconds() % 1000 / 10;
+				if (elapsed.asSeconds() >= 10)
+				{
+					clock.restart();
+					f2sec += 1;
+				}
+				if (f2sec >= 6)
+				{
+					f1min += 1;
+					f2sec = 0;
+				}
+				if (f2min >= 10)
+				{
+					f1min += 1;
+					f2min = 0;
+				}
+				lblTime.setString(showTime.str());
+				showTime.str("");
+
+				//Cooldown
+				sf::Time Lcool = co1.getElapsedTime();
+				sf::Time Jcool = co2.getElapsedTime();
+				sf::Time Utime = co3.getElapsedTime();
+				sf::Time JumpCool = co4.getElapsedTime();
+				sf::Time gainMana = cmanaClock.getElapsedTime();
+
+
+
+				//controlKey
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+				{
+					if (onGround == 1)
+					{
+						sJump.play();
+						isJump = 1;
+						onGround = 0;
+						Yspeed = -700.0f;
+					}
+				}
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+				{
+					Lspeed = 600.0f;
+					faceRight = -1;
+					isMove = -1;
+				}
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+				{
+					Rspeed = 600.0f;
+					faceRight = 1;
+					isMove = 1;
+				}
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::L))
+				{
+					if (change == 0 && (Lcool.asSeconds() >= 0.2))
+					{
+						change = 1;
+						co1.restart();
+					}
+					else if (change == 1 && (Lcool.asSeconds() >= 0.2))
+					{
+						change = 0;
+						co1.restart();
+					}
+				}
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::J) && (Jcool.asSeconds() >= 0.2))
+				{
+					if (cmana > 0)
+					{
+						cmana -= 1;
+						pickmana << "m" << cmana << ".png";
+						m4.loadFromFile(pickmana.str());
+						pickmana.str("");
+						mana.setTexture(m4);
+
+						co2.restart();
+						sBang.play();
+
+						//ReDirect+Posi Skill
+						scount += 1;
+						if (scount == 12)
+						{
+							for (int i = 1; i <= 11; i++)
+							{
+								sdir[i] = 0;
+								skilli[i].setPos({ -50,-50 });
+								skillf[i].setPos({ -50,-50 });
+								skillu[i].setPos({ -50,-50 });
+							}
+							scount = 1;
+						}
+
+						if (ulti == 1)
+						{
+							skillu[scount].setPos({ player.getX() , player.getY() - 5 });
+							isSkillu[scount] = 1;
+						}
+						else if (change == 0)
+						{
+							skilli[scount].setPos({ player.getX() , player.getY() - 5 });
+							isSkilli[scount] = 1;
+						}
+						else
+						{
+							skillf[scount].setPos({ player.getX() , player.getY() - 5 });
+							isSkillf[scount] = 1;
+						}
+					}
+				}
+
+				//Cant move LimitMap
+				if (player.getX() - player.getSize().x / 2.0f <= 0)
+				{
+					Lspeed = 0;
+				}
+				if (player.getX() + player.getSize().x / 2.0f >= 14999)
+				{
+					Rspeed = 0;
+				}
+
+				//Mana_Charge & Use
+				if (cmana == manax)
+				{
+					cmanaClock.restart();
+				}
+				if (gainMana.asSeconds() >= 1)
+				{
+					if (cmana < manax)
+					{
+						cmana += 1;
+						pickmana << "m" << cmana << ".png";
+						m4.loadFromFile(pickmana.str());
+						pickmana.str("");
+						mana.setTexture(m4);
+						cmanaClock.restart();
+					}
+				}
+
+
+
+
+				//BlockSet;
+				if (size < 48)
+				{
+					b1.set({ pos[size] }, { siz[size] });
+					blocks.push_back(b1);
+					size++;
+				}
+
+
+
+				//EnemyCollide_Player
+				if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+				{
+					if (loopEnemy <= 17)
+					{
+						cheart -= 1;
+						pickheart << "h" << cheart << ".png";
+						h6.loadFromFile(pickheart.str());
+						pickheart.str("");
+					}
+					else
+					{
+						cheart -= 2;
+						pickheart << "h" << cheart << ".png";
+						h6.loadFromFile(pickheart.str());
+						pickheart.str("");
+					}
+					if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
+						hert = -1;
+					else
+						hert = 1;
+
+					hertspeed = 1000.0f;
+				}
+				loopEnemy += 1;
+				if (loopEnemy == 21)
+				{
+					loopEnemy = 0;
+				}
+				if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+				{
+					if (loopEnemy <= 17)
+					{
+						cheart -= 1;
+						pickheart << "h" << cheart << ".png";
+						h6.loadFromFile(pickheart.str());
+						pickheart.str("");
+					}
+					else
+					{
+						cheart -= 2;
+						pickheart << "h" << cheart << ".png";
+						h6.loadFromFile(pickheart.str());
+						pickheart.str("");
+					}
+					if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
+						hert = -1;
+					else
+						hert = 1;
+
+					hertspeed = 1000.0f;
+				}
+				loopEnemy += 1;
+				if (loopEnemy == 21)
+				{
+					loopEnemy = 0;
+				}
+
+				//Enemypush
+				if (hert == -1 && hertspeed >= 0)
+				{
+					player.moveLeft(hertspeed * dt);
+					hertspeed -= 35.0f;
+					Rspeed = 0;
+					Lspeed = 0;
+				}
+				if (hert == 1 && hertspeed >= 0)
+				{
+					player.moveRight(hertspeed * dt);
+					hertspeed -= 35.0f;
+					Lspeed = 0;
+					Rspeed = 0;
+				}
+
+
+
+				//CheckBlock_Collide
+				for (size_t i = 0; i < blocks.size(); i++)
+				{
+					if (player.getGlobalBounds().intersects(blocks[i].getGlobalBounds()))
+					{
+						dx = player.getX() - blocks[i].getPos().x;
+						dy = player.getY() - blocks[i].getPos().y;
+						float intersectX = abs(dx) - (playerHalf.x + blocks[i].getSize().x / 2.0f);
+						float intersectY = abs(dy) - (playerHalf.y + blocks[i].getSize().y / 2.0f);
+						if (intersectX > intersectY)
+						{
+							if (dx > 0.0f)
+							{
+								Lspeed = 0;
+								hertspeed = -1;
+							}
+							else
+							{
+								Rspeed = 0;
+								hertspeed = -1;
+							}
+						}
+						else
+						{
+							if (dy < 0.0f)
+							{
+								isJump = 0;
+								onGround = 1;
+								Yspeed = -25.0f;
+								if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+								{
+									if (onGround == 1)
+									{
+										sJump.play();
+										isJump = 1;
+										onGround = 0;
+										Yspeed = -700.0f;
+									}
+								}
+								if (i == 47)
+								{
+									finish = 1;
+								}
+							}
+							else
+							{
+								Yspeed = 50.0f;
+								isJump = 0;
+							}
+						}
+					}
+					for (int j = 1; j <= scount; j++)
+					{
+						if (skillf[j].getGlobalBounds().intersects(blocks[i].getGlobalBounds()))
+						{
+							skillf[j].setPos({ -50,-50 });
+						}
+						if (skilli[j].getGlobalBounds().intersects(blocks[i].getGlobalBounds()))
+						{
+							skilli[j].setPos({ -50,-50 });
+						}
+						if (skillu[j].getGlobalBounds().intersects(blocks[i].getGlobalBounds()))
+						{
+							skillu[j].setPos({ -50,-50 });
+						}
+					}
+				}
+
+
+
+				//checkSkill_vsEnemys
+				for (int j = 1; j <= scount; j++)
+				{
+					//white
+					for (int i = 0; i <= 3; i++)
+					{
+						if (skillf[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+						{
+							enemy[i].setPos({ -300,-300 });
+							skillf[j].setPos({ -50,-50 });
+						}
+						if (skilli[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+						{
+							enemy[i].setPos({ -300,-300 });
+							skilli[j].setPos({ -50,-50 });
+						}
+						if (skillu[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+						{
+							enemy[i].setPos({ -300,-300 });
+							skillu[j].setPos({ -50,-50 });
+						}
+					}
+					//blue
+					for (int i = 4; i <= 9; i++)
+					{
+						if (skilli[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+						{
+							enemy[i].setPos({ -300,-300 });
+							skilli[j].setPos({ -50,-50 });
+						}
+						if (skillu[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+						{
+							enemy[i].setPos({ -300,-300 });
+							skillu[j].setPos({ -50,-50 });
+						}
+					}
+					//red
+					for (int i = 10; i <= 17; i++)
+					{
+						if (skillf[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+						{
+							enemy[i].setPos({ -300,-300 });
+							skillf[j].setPos({ -50,-50 });
+						}
+						if (skillu[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+						{
+							enemy[i].setPos({ -300,-300 });
+							skillu[j].setPos({ -50,-50 });
+						}
+					}
+					//violet
+					for (int i = 18; i <= 20; i++)
+					{
+						if (skillu[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+						{
+							enemy[i].setPos({ -300,-300 });
+							skillu[j].setPos({ -50,-50 });
+						}
+					}
+					for (int i = 1; i <= 20; i++)
+					{
+						if (skillf[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+						{
+							skillf[j].setPos({ -50,-50 });
+						}
+						if (skilli[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
+						{
+							skilli[j].setPos({ -50,-50 });
+						}
+					}
+				}
+
+				//std::cout << player.getX() << endl;
+
+				//EnemyAttack
+
+				enemy[10].Pattern1(dt,1830,2800);
+				enemy[12].Pattern1(dt,3400,4300);
+				enemy[6].Pattern1(dt, 5300, 6000);
+				enemy[1].Pattern1(dt, 8000, 8300);
+				enemy[7].Pattern1(dt, 8800, 9030);
+				enemy[14].Pattern1(dt, 9470, 9750);
+				enemy[2].Pattern1(dt, 10200, 10450);
+
+
+
+				//bus
+				enemy[11].Pattern1(dt, 2000,4410 );
+				enemy[4].Pattern1(dt,2170 ,4580 );
+				enemy[5].Pattern1(dt, 2340, 4750);
+
+				enemy[17].Pattern1(dt, 11000,11930 );
+				enemy[9].Pattern1(dt, 11170, 12100);
+
+				//
+
+
+
+
+				//FinishStage
+				if (finish == 1)
+				{
+					heliR[1].move(100.0f * dt, 0.0f);
+					isMove = 0;
+					isJump = 0;
+					Yspeed = 0;
+					Yspeed -= 25.0f;
+					player.moveRight(100.0f * dt);
+					rope.move(100.0f * dt, 0.0f);
+				}
+				if (player.getX() >= 15100)
+				{
+					stage = 3;
+					break;
+				}
+
+				//Dead
+				if (cheart <= 0)
+				{
+					defaultView.reset(sf::FloatRect(0, 0, window.getSize().x, window.getSize().y));
+					window.setView(defaultView);
+					dead = 1;
+					break;
+				}
+
+
+
+
+
+
+				//playerDoing
+
+				if (isMove == 1)
+				{
+					player.moveRight(Rspeed * dt);
+					isMove = 0;
+				}
+				if (isMove == -1)
+				{
+					player.moveLeft(Lspeed * dt);
+					isMove = 0;
+				}
+				if (isJump == 1 && onGround == 0)
+				{
+					player.moveY(Yspeed * dt);
+					Yspeed += retard;
+
+					if (player.getY() >= groundHeigh)
+					{
+						onGround = 1;
+						isJump = 0;
+					}
+				}
+				if (isJump == 0 && player.getY() < groundHeigh)
+				{
+					Yspeed += 25.0f;
+					player.moveY(Yspeed * dt);
+					if (player.getY() >= groundHeigh - 1)
+					{
+						onGround = 1;
+					}
+				}
+
+
+
+
+				//skillDirect
+
+				for (int i = 1; i <= scount; i++)
+				{
+					if (isSkillu[i] == 1)
+					{
+						if (sdir[i] == 0)
+						{
+							sdir[i] = faceRight;
+						}
+						if (sdir[i] == 1)
+						{
+							skillu[i].move((speed + 500) * dt);
+						}
+						if (sdir[i] == -1)
+						{
+							skillu[i].move(-(speed + 500) * dt);
+						}
+					}
+					if (isSkilli[i] == 1)
+					{
+						if (sdir[i] == 0)
+						{
+							sdir[i] = faceRight;
+						}
+						if (sdir[i] == 1)
+						{
+							skilli[i].move((speed + 500) * dt);
+						}
+						if (sdir[i] == -1)
+						{
+							skilli[i].move(-(speed + 500) * dt);
+						}
+
+					}
+					if (isSkillf[i] == 1)
+					{
+						if (sdir[i] == 0)
+						{
+							sdir[i] = faceRight;
+						}
+						if (sdir[i] == 1)
+						{
+							skillf[i].move((speed + 500) * dt);
+						}
+						if (sdir[i] == -1)
+						{
+							skillf[i].move(-(speed + 500) * dt);
+						}
+
+					}
+				}
+
+				//ItemCollect
+				if (player.getGlobalBounds().intersects(item.getGlobalBounds()))
+				{
+					co3.restart();
+					item.setPOs({ -50.0f,-50.0f });
+					ulti = 1;
+				}
+				//Ultimate
+				if (Utime.asSeconds() >= 10)
+				{
+					ulti = 0;
+					co3.restart();
+				}
+
+
+
+
+
+
+
+
+
+
+
+				//viewUpdate
+
+				position.x = player.getX() + 300 - (window.getSize().x / 2.0f);
+				position.y = player.getY() - (window.getSize().y / 1.0f);
+				if (position.x < 0)
+				{
+					position.x = 0;
+				}
+				if (position.x >= 13439)
+				{
+					position.x = 13440;
+				}
+				if (position.y < 0)
+				{
+					position.y = 0;
+				}
+				view.reset(sf::FloatRect(position.x, position.y, window.getSize().x, window.getSize().y));
+				lblStage.setPosition({ position.x + 1420.0f,10.0f });
+				lblTime.setPosition({ position.x + 1420.0f,50.0f });
+				heart.setPosition(10 + position.x, 10);
+				mana.setPosition(19 + position.x, 57);
+
+
+
+
+
+				//==========================================================DRAW=======================
+				//ToDraw
+				window.clear();
+				window.setView(view);
+				window.draw(bground);
+
+
+				window.draw(rope);
+				window.draw(hrope1);
+				window.draw(hrope2);
+				window.draw(hrope3);
+				helicopR.Update(0, dt);
+				heliR[0].setTextureRect(helicopR.uvRect);
+				heliR[1].setTextureRect(helicopR.uvRect);
+				window.draw(heliR[0]);
+				window.draw(heliR[1]);
+				helicopL.Update(0, dt);
+				heliL[0].setTextureRect(helicopL.uvRect);
+				heliL[1].setTextureRect(helicopL.uvRect);
+				window.draw(heliL[0]);
+				window.draw(heliL[1]);
+
+
+				//PlatformShow
+				/*
+				for (size_t i = 0; i < blocks.size(); i++)
+				{
+					window.draw(blocks[i].body);
+				}*/
+				window.draw(woodh);
+				window.draw(woodh2);
+
+
+				for (int i = 1; i <= scount; i++)
+				{
+					skilli[i].toDraw(window);
+					skillf[i].toDraw(window);
+					skillu[i].toDraw(window);
+				}
+				for (int i = 0; i < 21; i++)
+				{
+					enemy[i].toDraw(window);
+				}
+				//window.draw(truck);
+				//window.draw(truck2);
+
+				window.draw(heart);
+				window.draw(mana);
+				window.draw(lblStage);
+				window.draw(lblTime);
+
+
+
+
+				item.toDraw(window);
+
+				if (faceRight == 1)
+				{
+					player.toDrawR(window);
+				}
+				else
+				{
+					player.toDrawL(window);
+				}
+				//Draw
+				window.display();
+
+			}
+		}
+		if (stage == 3)
+		{
+			window.setFramerateLimit(60);
+			float dt;  //(deltatime)
+
+			//viewSet
+			sf::View view, defaultView;
+			view.reset(sf::FloatRect(0, 0, window.getSize().x, window.getSize().y));
+			view.setViewport(sf::FloatRect(0, 0, 1.0f, 1.0f));
+			sf::Vector2f position(window.getSize().x, window.getSize().y);
+
+			//background
+			sf::Texture bg;
+			bg.loadFromFile("map3r.png");
+			sf::RectangleShape bground;
+			bground.setSize(sf::Vector2f(15000, 780));
+			bground.setTexture(&bg);
+
+			//main music
+			sf::Music music;
+			music.openFromFile("mainSong.ogg");
+			music.setVolume(5.0);
+			music.play();
+
+			//skill music
+			sf::SoundBuffer soundBang, soundJump;
+			soundBang.loadFromFile("bang.wav");
+			soundJump.loadFromFile("musJump.wav");
+			sf::Sound sBang, sJump;
+			sBang.setBuffer(soundBang);
+			sJump.setBuffer(soundJump);
+			sBang.setVolume(30.0);
+			sJump.setVolume(30.0);
+
+			//upperText
+			sf::Font font;
+			font.loadFromFile("BAUHS93.TTF");
+
+			ostringstream showStage;
+			showStage << "Stage 3";
+			sf::Text lblStage;
+			lblStage.setCharacterSize(30);
+			lblStage.setPosition({ 1420,10 });
+			lblStage.setFont(font);
+			lblStage.setString(showStage.str());
+
+			int f2sec = 0, f1min = 0, f2min = 0;
+			sf::Clock clock;
+			sf::Time elapsed = clock.getElapsedTime();
+			ostringstream showTime;
+
+			sf::Text lblTime;
+			lblTime.setCharacterSize(30);
+			lblTime.setPosition({ 1420,50 });
+			lblTime.setFont(font);
+
+			//Mana+Hp
+			ostringstream pickmana;
+			ostringstream pickheart;
+
+			sf::Texture h6, m4;
+			h6.loadFromFile("h6.png");
+			sf::Sprite heart;
+			heart.setTexture(h6);
+			heart.setPosition(0, 0);
+
+			m4.loadFromFile("m4.png");
+			sf::Sprite mana;
+			mana.setTexture(m4);
+			mana.setPosition(0, 50);
+
+			//BackGroundAnimation
+			sf::Texture heli1, heli2, texrope, tr, tr2;
+			heli1.loadFromFile("helicopterRanimation.png");
+			heli2.loadFromFile("helicopterLanimation.png");
+			texrope.loadFromFile("ropes.png");
+			tr2.loadFromFile("tr2.png");
+			tr.loadFromFile("tr.png");
+			sf::Sprite heliR, rope ;
+			heliR.setTexture(heli1);
+			heliR.setPosition(2434.0, 65.0);
+
+			Animetion helicopR(&heli1, sf::Vector2u(1, 4), 0.05f);
+			
+			rope.setTexture(texrope);
+			rope.setPosition(9000.0, 20.0);
+
+			//Clock_use
+			sf::Clock co1; //Lswitch
+			sf::Clock co2; //Jswitch
+			sf::Clock co3; //Ulti
+			sf::Clock co4; //jumpBlock
+			sf::Clock dtclock; //deltaTime
+			sf::Clock cmanaClock; //manaGain
+
+
+			//PlayerObject
+			Player player({ 84.0,112.0 });
+			player.setOrigin();
+			player.setPos({ 12000.0,664.0 });
+			sf::Vector2f playerHalf = player.getSize() / 2.0f;
+
+			//item
+			srand(time(0));
+			int randomItem = rand() % 3;
+			Item item;
+			if (randomItem == 1)
+			{
+				item.setPOs({ 1300.0,380.0 });
+			}
+			else if (randomItem == 2)
+			{
+				item.setPOs({ 1300.0,100 });
+			}
+			else
+			{
+				item.setPOs({ 1300.0,600.0 });
+			}
+
+			//skillPlayer
+			Skill skilli[12], skillf[12], skillu[12];
+			for (int i = 1; i <= 11; i++)
+			{
+				skilli[i].setColor(sf::Color::Blue);
+				skillf[i].setColor(sf::Color::Red);
+				skillu[i].setColor(sf::Color(128, 0, 128));
+			}
+
+			//enemy
+			Enemy enemy[21];
+			//White
+			/*enemy[0].set0();
+			enemy[0].setPos({ 2452,670 });
+			enemy[1].set0();
+			enemy[1].setPos({ 9350,670 });
+			enemy[0].set0();
+			enemy[0].setPos({ 2452,670 });
+			enemy[1].set0();
+			enemy[1].setPos({ 9350,670 });
+			//Blue
+			enemy[2].set1();
+			enemy[2].setPos({ 4360,670 });
+			enemy[3].set1();
+			enemy[3].setPos({ 4680,670 });
+			enemy[4].set1();
+			enemy[4].setPos({ 8590, 285 });
+			enemy[2].set1();
+			enemy[2].setPos({ 4360,670 });
+			enemy[3].set1();
+			enemy[3].setPos({ 4680,670 });
+			enemy[4].set1();
+			enemy[4].setPos({ 8590, 285 });
+			//Red
+			enemy[5].set2();
+			enemy[5].setPos({ 3115,670 });
+			enemy[6].set2();
+			enemy[6].setPos({ 4515,670 });
+			enemy[7].set2();
+			enemy[7].setPos({ 9120,670 });
+			enemy[8].set2();
+			enemy[8].setPos({ 11100,670 });
+			//Violet
+			enemy[9].set3();
+			enemy[9].setPos({ 5693,590 });
+			enemy[10].set3();
+			enemy[10].setPos({ 9560,670 });
+			enemy[11].set3();
+			enemy[11].setPos({ 10240,590 });*/
+
+
+			Block b1;
+			vector<Block> blocks;
+
+			sf::Vector2f pos[27], siz[27];
+			
+
+			pos[0] = { 8413,30 };		//helicop
+			pos[1] = { 4062,622 };		//box
+			pos[2] = { 11995,626 };
+			pos[3] = { 12093,626 };
+			pos[4] = { 12093,534 };
+			pos[5] = { 12743,622 };
+			pos[6] = { 12743,530 };
+			pos[7] = { 12841,622 };
+			pos[8] = { 2134,144 };		//platform	
+			pos[9] = { 2592,86 };
+			pos[10] = { 3232,136 };
+			pos[11] = { 3390,44 };
+			pos[12] = { 4275,45 };
+			pos[13] = { 4452,100 };
+			pos[14] = { 3232,136 };
+			pos[15] = { 3390,44 };
+			pos[16] = { 4275,45 };
+			pos[17] = { 4452,100 };
+			pos[18] = { 4452,100 };
+			pos[19] = { 4452,100 };
+			pos[20] = { 4452,100 };
+			pos[21] = { 4452,100 };
+			pos[22] = { 4452,100 };
+			pos[23] = { 4452,100 };
+			pos[24] = { 4452,100 };
+			pos[25] = { 14614.0,385 };		//finish
+
+
+			siz[0] = { 397,128 };		//helicop
+			siz[1] = { 98,98 };			//box
+			siz[2] = { 98,98 };
+			siz[3] = { 98,98 };
+			siz[4] = { 98,98 };
+			siz[5] = { 98,98 };
+			siz[6] = { 98,98 };
+			siz[7] = { 98,98 };
+			siz[8] = { 190,25 };		//platform	
+			siz[9] = { 190,124 };
+			siz[10] = { 190,25 };
+			siz[11] = { 170,104 };
+			siz[12] = { 190,124 };
+			siz[13] = { 145,32 };
+			siz[14] = { 190,25 };
+			siz[15] = { 170,104 };
+			siz[16] = { 190,124 };
+			siz[17] = { 145,32 };
+			siz[18] = { 145,32 };
+			siz[19] = { 145,32 };
+			siz[20] = { 145,32 };
+			siz[21] = { 145,32 };
+			siz[22] = { 145,32 };
+			siz[23] = { 145,32 };
+			siz[24] = { 145,32 };
+			siz[25] = { 168,23 };		//finish
+
+
+			int size = 0;
+
+			//variableSwitch
+			int isMove = 0, isJump = 0, ulti = 0, faceRight = 1;
+
+			//variableSkill
+			int change = 0, isSkilli[12], isSkillf[12], isSkillu[12], scount = 0, sdir[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 };
+			int cmana = 4, manax = 4;
+
+			//variablePlayerDoing
+			float speed = 600.0f, Yspeed, retard = 25.0f, fallspeed = 0, Rspeed = 600.0f, Lspeed = 600.0f;
+			int  onGround = 1, groundHeigh = 662, boxx = 0;
+
+			//Heart
+			int cheart = 6, hert = 0, hertspeed = 0;
+
+			//block
+			float dx, dy;
+			float intersectX, intersectY;
+			int finish = 0;
+
+			//enemy
+			int loopEnemy = 0, ebus2 = 0, dashgo1 = 0, dashgo2 = 0, jumppoint1 = 0, jumppoint2 = 0, downpoint1 = 0, downpoint2 = 0;
+
+
+			//------------------------------------------------------IN Game stage II------------------------
 			while (window.isOpen())
 			{
 				dt = dtclock.restart().asSeconds();
@@ -1523,7 +2451,7 @@ int main()
 
 
 				//BlockSet;
-				if (size < 48)
+				if (size < 28)
 				{
 					b1.set({ pos[size] }, { siz[size] });
 					blocks.push_back(b1);
@@ -1750,7 +2678,7 @@ int main()
 					}
 				}
 
-				enemy[0].Pattern0(dt);
+				/*enemy[0].Pattern0(dt);
 
 				enemy[4].Pattern1(dt, 8390, 8790);
 				enemy[5].Pattern1(dt, 2915, 3355);
@@ -1783,7 +2711,7 @@ int main()
 				{
 					downpoint1 = 1;
 				}
-				enemy[9].Pattern2(dt, dashgo1, jumppoint1, downpoint1);
+				enemy[9].Pattern2(dt, dashgo1, jumppoint1, downpoint1);*/
 
 				/*
 				if (player.getX() >= 6500)
@@ -1806,7 +2734,7 @@ int main()
 				//FinishStage
 				if (finish == 1)
 				{
-					heliR[1].move(100.0f * dt, 0.0f);
+					heliR.move(100.0f * dt, 0.0f);
 					isMove = 0;
 					isJump = 0;
 					Yspeed = 0;
@@ -1933,7 +2861,7 @@ int main()
 				}
 
 
-
+				std::cout << player.getX() << std::endl;
 
 
 
@@ -1976,29 +2904,19 @@ int main()
 
 
 				window.draw(rope);
-				window.draw(hrope1);
-				window.draw(hrope2);
-				window.draw(hrope3);
 				helicopR.Update(0, dt);
-				heliR[0].setTextureRect(helicopR.uvRect);
-				heliR[1].setTextureRect(helicopR.uvRect);
-				window.draw(heliR[0]);
-				window.draw(heliR[1]);
-				helicopL.Update(0, dt);
-				heliL[0].setTextureRect(helicopL.uvRect);
-				heliL[1].setTextureRect(helicopL.uvRect);
-				window.draw(heliL[0]);
-				window.draw(heliL[1]);
+				heliR.setTextureRect(helicopR.uvRect);
+				window.draw(heliR);
+				
 
 
 				//PlatformShow
-				/*
+				
 				for (size_t i = 0; i < blocks.size(); i++)
 				{
 					window.draw(blocks[i].body);
-				}*/
-				window.draw(woodh);
-				window.draw(woodh2);
+				}
+				
 
 
 				for (int i = 1; i <= scount; i++)
@@ -2011,8 +2929,7 @@ int main()
 				{
 					enemy[i].toDraw(window);
 				}
-				window.draw(truck);
-				window.draw(truck2);
+				
 
 				window.draw(heart);
 				window.draw(mana);
@@ -2036,10 +2953,6 @@ int main()
 				window.display();
 
 			}
-		}
-		if (stage == 3)
-		{
-
 		}
 
 

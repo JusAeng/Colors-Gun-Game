@@ -42,7 +42,7 @@ public:
         enemy.setPosition(newPos);
     }
 
-    void Pattern0(float dt)
+    void Pattern0(float dt)     //moveUpDown
     {
         if (speed0 >= 0)
         {
@@ -71,7 +71,7 @@ public:
             }
         }
     }
-    void Pattern1(float dt,float point_return1,float point_return2)
+    void Pattern1(float dt,float point_return1,float point_return2)     //moveLeftRigt
     {
         if (direct1 == 1)
         {
@@ -92,7 +92,7 @@ public:
             direct1 = 1;
         }
     }
-    void Pattern2(float dt,int go,int jumpPoint,int downPoint)
+    void Pattern2(float dt,int go,int jumpPoint,int downPoint)      //Dash
     {
         if (go == 1)
         {
@@ -114,6 +114,35 @@ public:
             if (enemy.getPosition().y >= 664)
             {
                Yspeed2 = 0;
+            }
+        }
+    }
+
+    void Pattern3(float dt, int go,int direct,int sp)
+    {
+        if (go == 1)
+        {
+            if (sp == 0)
+            {
+                if (direct == 1)
+                {
+                    enemy.move(speed3 * dt, 0);
+                }
+                if (direct == -1)
+                {
+                    enemy.move(-speed3 * dt, 0);
+                }
+            }
+            else
+            {
+                if (direct == 1)
+                {
+                    enemy.move(speed31 * dt, 0);
+                }
+                if (direct == -1)
+                {
+                    enemy.move(-speed31 * dt, 0);
+                }
             }
         }
     }
@@ -153,6 +182,9 @@ private:
     float Yspeed2 = 800;
     float fall2 = 0;
     float retard2 = 25;
+
+    float speed3 = 800;
+    float speed31 = 1000;
 
 
 };
