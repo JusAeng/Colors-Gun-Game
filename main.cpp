@@ -2325,6 +2325,7 @@ int main()
 			sf::Clock bossClock; //bossColor
 			sf::Clock co7; //bossShoot 
 			sf::Clock co8; //ItemDropBoss
+			sf::Clock co9; //congrateTIMe
 
 
 			//PlayerObject
@@ -2411,7 +2412,13 @@ int main()
 			Enemy boss;
 			boss.setBoss();
 			boss.setPos({14750,470});
-			
+			sf::RectangleShape win;
+			sf::Texture won;
+			won.loadFromFile("won.png");
+			win.setTexture(&won);
+			win.setOrigin(sf::Vector2f(win.getSize().x / 2, win.getSize().y / 2));
+			win.setPosition(13800,-800);
+			win.setSize({940,360});
 
 
 
@@ -2567,6 +2574,7 @@ int main()
 				sf::Time bossTime = bossClock.getElapsedTime();
 				sf::Time bossShoot = co7.getElapsedTime();
 				sf::Time bossItem = co8.getElapsedTime();
+				sf::Time congrateTime = co9.getElapsedTime();
 
 
 
@@ -3394,6 +3402,7 @@ int main()
 					if (bossHp <= 0)
 					{
 						boss.setPos({ -500,-500 });
+						co7.restart();
 						clear = 1;
 					}
 
@@ -3403,31 +3412,31 @@ int main()
 
 
 
-
+				if (clear != 1)
+				{
+					co9.restart();
+				}
 
 				//StageClear
 				if (clear == 1)
 				{
 					clearTime3 = allTime.asSeconds();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-					RecordScore = 1;
-					break;
+					win.move(0,500*dt);
+					if (win.getPosition().y >= 10)
+					{
+						win.move(0, -500*dt);
+					}
+					
+					if (congrateTime.asSeconds() >= 5)
+					{
+						defaultView.reset(sf::FloatRect(0, 0, window.getSize().x, window.getSize().y));
+						window.setView(defaultView);
+						RecordScore = 1;
+						break;
+					}
+					
 				}
+				cout << win.getPosition().x << "  " << win.getPosition().y << endl;
 
 
 				//viewUpdate
@@ -3541,6 +3550,9 @@ int main()
 						co6.restart();
 					}
 				}
+
+				window.draw(win);
+
 				//Draw
 				window.display();
 
