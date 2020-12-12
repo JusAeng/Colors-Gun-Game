@@ -36,6 +36,14 @@ public:
         texture.loadFromFile("enemy3.png");
         enemy.setTexture(&texture);
     }
+    void setBoss()
+    {
+        enemy.setFillColor(sf::Color(128, 0, 128));
+        texture.loadFromFile("enemy3.png");
+        enemy.setTexture(&texture);
+        enemy.setScale(6, 6);
+    }
+    
 
     void setPos(sf::Vector2f newPos) 
     {
@@ -92,7 +100,7 @@ public:
             direct1 = 1;
         }
     }
-    void Pattern2(float dt,int go,int jumpPoint,int downPoint)      //Dash
+    void Pattern2(float dt,int go,int jumpPoint,int downPoint)      //DashJump
     {
         if (go == 1)
         {
@@ -118,7 +126,7 @@ public:
         }
     }
 
-    void Pattern3(float dt, int go,int direct,int sp)
+    void Pattern3(float dt, int go,int direct,int sp)  //DashSpeed
     {
         if (go == 1)
         {
@@ -133,7 +141,29 @@ public:
                     enemy.move(-speed3 * dt, 0);
                 }
             }
-            else
+            else if (sp == 2)
+            {
+                if (direct == 1)
+                {
+                    enemy.move(speed32 * dt, 0);
+                }
+                if (direct == -1)
+                {
+                    enemy.move(-speed32 * dt, 0);
+                }
+            }
+            else if (sp == 3)
+            {
+                if (direct == 1)
+                {
+                    enemy.move(speed33 * dt, 0);
+                }
+                if (direct == -1)
+                {
+                    enemy.move(-speed33 * dt, 0);
+                }
+            }
+            else 
             {
                 if (direct == 1)
                 {
@@ -146,6 +176,34 @@ public:
             }
         }
     }
+
+    void Pattern4(float dt, int go,int sp) //BossBullet
+    {
+        if (go == 1)
+        {
+            if (sp == 0)
+            {
+                enemy.move(-speed4*dt, 0);
+            }
+            if (sp == 1)
+            {
+                enemy.move(-speed41 * dt, 0);
+            }
+            if (sp == 2)
+            {
+                enemy.move(-speed42 * dt, 0);
+            }
+            if (sp == 3)
+            {
+                enemy.move(-speed43 * dt, 0);
+            }
+            else
+            {
+                enemy.move(-speed44 * dt, 0);
+            }
+        }
+    }
+
 
 
 
@@ -183,8 +241,17 @@ private:
     float fall2 = 0;
     float retard2 = 25;
 
-    float speed3 = 800;
-    float speed31 = 1000;
+    float speed3 = 700;
+    float speed31 = 750;
+    float speed32 = 1400;
+    float speed33 = 500;
+
+
+    float speed4 = 200;
+    float speed41 = 300;
+    float speed42 = 350;
+    float speed43 = 400;
+    float speed44 = 500;
 
 
 };

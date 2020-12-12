@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <vector>
 #include <math.h>
 #include "Player.h"
@@ -23,9 +24,17 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1560, 780), "JusGame", sf::Style::Close| sf::Style::Resize);
 	sf::Event ev;
 
-	int stage = 3,ename=0,dead=0;
+	//Engine Var
+	int stage = 0,ename=0,dead=0,scoreboard=0, RecordScore = 0;
+
+	//score
+	int replace,clearTime1=1000, clearTime2=1000, clearTime3=1000, score = 0;
+	int highScore[6], loopscore = 1;
+	string readScore;
 
 	Menu menu(window.getSize().x, window.getSize().y);
+
+	ifstream readFile;
 
 	while (true)
 	{
@@ -126,12 +135,15 @@ int main()
 			music.play();
 
 			//skill music
-			sf::SoundBuffer soundBang, soundJump;
+			sf::SoundBuffer soundBang, soundJump,soundHert;
 			soundBang.loadFromFile("bang.wav");
 			soundJump.loadFromFile("musJump.wav");
-			sf::Sound sBang, sJump;
+			soundHert.loadFromFile("hert.ogg");
+			sf::Sound sBang, sJump,sHert;
 			sBang.setBuffer(soundBang);
 			sJump.setBuffer(soundJump);
+			sHert.setBuffer(soundHert);
+			sHert.setVolume(30.0);
 			sBang.setVolume(30.0);
 			sJump.setVolume(30.0);
 
@@ -203,7 +215,9 @@ int main()
 			sf::Clock co4; //jumpBlock
 			sf::Clock dtclock; //deltaTime
 			sf::Clock cmanaClock; //manaGain
-
+			sf::Clock co5; //hertCool
+			sf::Clock co6; //flash
+			sf::Clock gClock;// alltime
 
 
 
@@ -213,25 +227,25 @@ int main()
 			//PlayerObject
 			Player player({ 84.0,112.0 });
 			player.setOrigin();
-			player.setPos({ 60.0,664.0 });
+			player.setPos({ 200.0,664.0 });
 			sf::Vector2f playerHalf = player.getSize() / 2.0f;
 
 			//item
 			srand(time(0));
 			int randomItem=rand()%2;
-			Item item;
+			Item item,item2,item3;
+
+			item.setPOs({6350,250});
 			if (randomItem == 1)
 			{
-				item.setPOs({ 1300.0,380.0 });
+				item2.setPOs({ 8336.0,100.00 });
 			}
-			else if (randomItem == 2)
+			else
 			{
-				item.setPOs({1300.0,100});
+				item2.setPOs({ 8336.0,500 });
 			}
-			else 
-			{
-				item.setPOs({1300.0,600.0});
-			}
+			item3.setPOs({10880,200});
+			
 
 			//skillPlayer
 			Skill skilli[12], skillf[12], skillu[12];
@@ -354,7 +368,7 @@ int main()
 			int  onGround = 1, groundHeigh = 662, boxx = 0;
 
 			//Heart
-			int cheart = 6, hert = 0, hertspeed = 0;
+			int cheart = 6, hert = 0, hertspeed = 0,alive=1;
 
 			//block
 			float dx, dy;
@@ -409,6 +423,9 @@ int main()
 				sf::Time Utime = co3.getElapsedTime();
 				sf::Time JumpCool = co4.getElapsedTime();
 				sf::Time gainMana = cmanaClock.getElapsedTime();
+				sf::Time hertCool = co5.getElapsedTime();
+				sf::Time flash = co6.getElapsedTime();
+				sf::Time allTime = gClock.getElapsedTime();
 
 
 
@@ -535,66 +552,79 @@ int main()
 
 
 				//EnemyCollide_Player
-				if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+				if (hertCool.asSeconds() >= 1.5)
 				{
-					if (loopEnemy <= 8)
+					alive = 1;
+				}
+				if (alive == 1)
+				{
+					loopEnemy += 1;
+					if (loopEnemy == 12)
 					{
-						cheart -= 1;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
+						loopEnemy = 0;
 					}
-					else
+					if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
 					{
-						cheart -= 2;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
-					}
-					if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
-						hert = -1;
-					else
-						hert = 1;
+						if (loopEnemy <= 8)
+						{
+							cheart -= 1;
+							pickheart << "h" << cheart << ".png";
+							h6.loadFromFile(pickheart.str());
+							pickheart.str("");
+						}
+						else
+						{
+							cheart -= 2;
+							pickheart << "h" << cheart << ".png";
+							h6.loadFromFile(pickheart.str());
+							pickheart.str("");
+						}
+						if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
+							hert = -1;
+						else
+							hert = 1;
 
-					hertspeed = 1000.0f;
+						hertspeed = 1000.0f;
+						sHert.play();
+						co5.restart();
+						alive = 0;
+					}
+
+					//EnemyPush
+					loopEnemy += 1;
+					if (loopEnemy == 12)
+					{
+						loopEnemy = 0;
+					}
+					if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+					{
+						if (loopEnemy <= 8)
+						{
+							cheart -= 1;
+							pickheart << "h" << cheart << ".png";
+							h6.loadFromFile(pickheart.str());
+							pickheart.str("");
+						}
+						else
+						{
+							cheart -= 2;
+							pickheart << "h" << cheart << ".png";
+							h6.loadFromFile(pickheart.str());
+							pickheart.str("");
+						}
+						if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
+							hert = -1;
+						else
+							hert = 1;
+
+						hertspeed = 1000.0f;
+						sHert.play();
+						co5.restart();
+						alive = 0;
+					}
 				}
 
 				//EnemyPush
-				loopEnemy += 1;
-				if (loopEnemy == 12)
-				{
-					loopEnemy = 0;
-				}
-				if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
-				{
-					if (loopEnemy <= 8)
-					{
-						cheart -= 1;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
-					}
-					else
-					{
-						cheart -= 2;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
-					}
-					if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
-						hert = -1;
-					else
-						hert = 1;
-
-					hertspeed = 1000.0f;
-				}
-
-				//EnemyPush
-				loopEnemy += 1;
-				if (loopEnemy == 12)
-				{
-					loopEnemy = 0;
-				}
 				if (hert == -1 && hertspeed >= 0)
 				{
 					player.moveLeft(hertspeed * dt);
@@ -752,6 +782,18 @@ int main()
 							skilli[j].setPos({ -50,-50 });
 						}
 					}
+					if (skillu[j].getX() >= position.x + 1580)
+					{
+						skillu[j].setPos({ -50,-50 });
+					}
+					if (skilli[j].getX() >= position.x + 1580)
+					{
+						skilli[j].setPos({ -50,-50 });
+					}
+					if (skillf[j].getX() >= position.x + 1580)
+					{
+						skillf[j].setPos({ -50,-50 });
+					}
 				}
 
 				enemy[0].Pattern0(dt);
@@ -789,20 +831,20 @@ int main()
 				}
 				enemy[9].Pattern2(dt, dashgo1, jumppoint1, downpoint1);
 					
-				/*
-				if (player.getX() >= 6500)
+				
+				if (finish==1)
 				{
 					dashgo2 = 1;
 				}
-				if (enemy[11].getPos().x >= 6600)
+				if (enemy[11].getPos().x >= 11500)
 				{
 					jumppoint2 = 1;
 				}
-				if (enemy[11].getPos().x >= 6050)
+				if (enemy[11].getPos().x >= 10500)
 				{
 					downpoint2 = 1;
 				}
-				enemy[11].Pattern2(dt, dashgo2, jumppoint2, downpoint2);*/
+				enemy[11].Pattern2(dt, dashgo2, jumppoint2, downpoint2);
 
 
 
@@ -810,6 +852,7 @@ int main()
 				//FinishStage
 				if (finish==1)
 				{
+					clearTime1 = allTime.asSeconds();
 					heliR.move(100.0f * dt, 0.0f);
 					isMove = 0;
 					isJump = 0;
@@ -832,9 +875,7 @@ int main()
 					dead=1;
 					break;
 				}
-			
-
-
+		
 
 
 
@@ -934,6 +975,18 @@ int main()
 					item.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
+				if (player.getGlobalBounds().intersects(item2.getGlobalBounds()))
+				{
+					co3.restart();
+					item2.setPOs({ -50.0f,-50.0f });
+					ulti = 1;
+				}
+				if (player.getGlobalBounds().intersects(item3.getGlobalBounds()))
+				{
+					co3.restart();
+					item3.setPOs({ -50.0f,-50.0f });
+					ulti = 1;
+				}
 				//Ultimate
 				if (Utime.asSeconds() >= 10)
 				{
@@ -942,7 +995,7 @@ int main()
 				}
 
 
-
+				//cout << player.getX() << " " << player.getY() << endl;
 
 
 
@@ -989,6 +1042,9 @@ int main()
 				window.draw(heliL[0]);
 				window.draw(heliL[1]);
 				
+				item.toDraw(window);
+				item2.toDraw(window);
+				item3.toDraw(window);
 
 				//PlatformShow
 				/*for (size_t i = 0; i < blocks.size(); i++)
@@ -1017,17 +1073,34 @@ int main()
 				window.draw(lblTime);
 
 
-
-
-				item.toDraw(window);
-
-				if (faceRight == 1)
+				if (alive == 1)
 				{
-					player.toDrawR(window);
+					if (faceRight == 1)
+					{
+						player.toDrawR(window);
+					}
+					else
+					{
+						player.toDrawL(window);
+					}
 				}
 				else
 				{
-					player.toDrawL(window);
+					if (flash.asSeconds() >= 0.15)
+					{
+						if (faceRight == 1)
+						{
+							player.toDrawR(window);
+						}
+						else
+						{
+							player.toDrawL(window);
+						}
+					}
+					if (flash.asSeconds() >= 0.35)
+					{
+						co6.restart();
+					}
 				}
 				//Draw
 				window.display();
@@ -1059,12 +1132,15 @@ int main()
 			music.play();
 
 			//skill music
-			sf::SoundBuffer soundBang, soundJump;
+			sf::SoundBuffer soundBang, soundJump, soundHert;
 			soundBang.loadFromFile("bang.wav");
 			soundJump.loadFromFile("musJump.wav");
-			sf::Sound sBang, sJump;
+			soundHert.loadFromFile("hert.ogg");
+			sf::Sound sBang, sJump, sHert;
 			sBang.setBuffer(soundBang);
 			sJump.setBuffer(soundJump);
+			sHert.setBuffer(soundHert);
+			sHert.setVolume(30.0);
 			sBang.setVolume(30.0);
 			sJump.setVolume(30.0);
 
@@ -1151,7 +1227,9 @@ int main()
 			sf::Clock co4; //jumpBlock
 			sf::Clock dtclock; //deltaTime
 			sf::Clock cmanaClock; //manaGain
-
+			sf::Clock co5; //HertCooldown
+			sf::Clock co6; //playerFlash
+			sf::Clock gClock; //allTIme
 
 
 
@@ -1161,25 +1239,37 @@ int main()
 			//PlayerObject
 			Player player({ 84.0,112.0 });
 			player.setOrigin();
-			player.setPos({ 100.0,664.0 });
+			player.setPos({ 200.0,664.0 });
 			sf::Vector2f playerHalf = player.getSize() / 2.0f;
 
 			//item
 			srand(time(0));
 			int randomItem = rand() % 3;
-			Item item;
+			Item item,item2,item3,item4,item5;
+			
+			item.setPOs({ 2115,620 });
 			if (randomItem == 1)
 			{
-				item.setPOs({ 1300.0,380.0 });
-			}
-			else if (randomItem == 2)
-			{
-				item.setPOs({ 1300.0,100 });
+				item2.setPOs({ 3870,500 });
 			}
 			else
 			{
-				item.setPOs({ 1300.0,600.0 });
+				item2.setPOs({ 3870,150 });
 			}
+			item3.setPOs({8290,195});
+			if (randomItem == 1)
+			{
+				item4.setPOs({ -50,-50 });
+			}
+			else
+			{
+				item4.setPOs({ 13100,200 });
+			}
+			item5.setPOs({ 14900,630 });
+
+
+			
+			
 
 			//skillPlayer
 			Skill skilli[12], skillf[12], skillu[12];
@@ -1237,7 +1327,7 @@ int main()
 			enemy[19].set3();
 			enemy[19].setPos({ 13691,590 });
 			enemy[20].set3();
-			enemy[20].setPos({ 16000,670 });
+			enemy[20].setPos({ 15400,670 });
 
 
 			Block b1;
@@ -1370,7 +1460,7 @@ int main()
 			int  onGround = 1, groundHeigh = 662, boxx = 0;
 
 			//Heart
-			int cheart = 6, hert = 0, hertspeed = 0;
+			int cheart = 6, hert = 0, hertspeed = 0,alive=1;
 
 			//block
 			float dx, dy;
@@ -1379,6 +1469,7 @@ int main()
 
 			//enemy
 			int loopEnemy = 0, ebus2 = 0, dashgo1 = 0, dashgo2 = 0, jumppoint1 = 0, jumppoint2 = 0, downpoint1 = 0, downpoint2 = 0;
+			int dashgo3 = 0, jumppoint3, downpoint3 = 0,go0=0, go13 = 0, go15 = 0, go3 = 0, go16 = 0, go8 = 0,go20=0;
 
 
 			//------------------------------------------------------IN Game stage II------------------------
@@ -1425,6 +1516,9 @@ int main()
 				sf::Time Utime = co3.getElapsedTime();
 				sf::Time JumpCool = co4.getElapsedTime();
 				sf::Time gainMana = cmanaClock.getElapsedTime();
+				sf::Time hertCool = co5.getElapsedTime();
+				sf::Time flash = co6.getElapsedTime();
+				sf::Time allTime = gClock.getElapsedTime();
 
 
 
@@ -1551,61 +1645,41 @@ int main()
 
 
 				//EnemyCollide_Player
-				if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+				if (hertCool.asSeconds() >= 1.5)
 				{
-					if (loopEnemy <= 17)
+					alive = 1;
+				}
+				if (alive == 1)
+				{
+					for (int loopEnemy = 0; loopEnemy < 21; loopEnemy++)
 					{
-						cheart -= 1;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
-					}
-					else
-					{
-						cheart -= 2;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
-					}
-					if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
-						hert = -1;
-					else
-						hert = 1;
+						if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+						{
+							if (loopEnemy <= 17)
+							{
+								cheart -= 1;
+								pickheart << "h" << cheart << ".png";
+								h6.loadFromFile(pickheart.str());
+								pickheart.str("");
+							}
+							else
+							{
+								cheart -= 2;
+								pickheart << "h" << cheart << ".png";
+								h6.loadFromFile(pickheart.str());
+								pickheart.str("");
+							}
+							if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
+								hert = -1;
+							else
+								hert = 1;
 
-					hertspeed = 1000.0f;
-				}
-				loopEnemy += 1;
-				if (loopEnemy == 21)
-				{
-					loopEnemy = 0;
-				}
-				if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
-				{
-					if (loopEnemy <= 17)
-					{
-						cheart -= 1;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
+							hertspeed = 1200.0f;
+							co5.restart();
+							alive = 0;
+							sHert.play();
+						}
 					}
-					else
-					{
-						cheart -= 2;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
-					}
-					if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
-						hert = -1;
-					else
-						hert = 1;
-
-					hertspeed = 1000.0f;
-				}
-				loopEnemy += 1;
-				if (loopEnemy == 21)
-				{
-					loopEnemy = 0;
 				}
 
 				//Enemypush
@@ -1766,9 +1840,21 @@ int main()
 							skilli[j].setPos({ -50,-50 });
 						}
 					}
+					if (skillu[j].getX() >= position.x + 1580)
+					{
+						skillu[j].setPos({ -50,-50 });
+					}
+					if (skilli[j].getX() >= position.x + 1580)
+					{
+						skilli[j].setPos({ -50,-50 });
+					}
+					if (skillf[j].getX() >= position.x + 1580)
+					{
+						skillf[j].setPos({ -50,-50 });
+					}
 				}
 
-				//std::cout << player.getX() << endl;
+				//std::cout << player.getX() <<"   "<<player.getY()<< endl;
 
 				//EnemyAttack
 
@@ -1790,7 +1876,66 @@ int main()
 				enemy[17].Pattern1(dt, 11000,11930 );
 				enemy[9].Pattern1(dt, 11170, 12100);
 
-				//
+				//trap
+				if (player.getX() >= 5100)
+				{
+					go0 = 1;
+					go13 = 1;
+				}
+				enemy[0].Pattern3(dt, go0, -1, 0);
+				enemy[13].Pattern3(dt, go13, -1, 1);
+				if (player.getX() >= 8550)
+				{
+					go3 = 1;
+				}
+				enemy[3].Pattern3(dt, go3, -1, 0);
+				if (player.getX() >= 9200)
+				{
+					go15=1;
+				}
+				enemy[15].Pattern3(dt, go15, -1, 0);
+				if (player.getX() >= 9900)
+				{
+					go16 = 1;
+					go8 = 1;
+				}
+				enemy[16].Pattern3(dt, go16, -1, 1);
+				enemy[8].Pattern3(dt, go8, -1, 0);
+
+
+				if (player.getX() >= 2350&&player.getY()>=500)
+				{
+					dashgo1 = 1;
+					if (player.getX() - enemy[18].getPos().x <= 250 && player.getX() - enemy[18].getPos().x >= 0)
+					{
+						jumppoint1 = 1;
+					}
+					if (enemy[18].getPos().x >= 1900)
+					{
+						downpoint1 = 1;
+					}
+				}
+				enemy[18].Pattern2(dt, dashgo1, jumppoint1, downpoint1);
+
+
+				if (player.getX() >= 12840)
+				{
+					dashgo2 = 1;
+				}
+				enemy[19].Pattern3(dt, dashgo2, -1, 0);
+
+				if (player.getX() >= 14330 && player.getY() >= 500)
+				{
+					go20 = 1;
+				}
+				enemy[20].Pattern3(dt, go20, -1, 1);
+
+				
+
+
+				//cout << player.getX() << endl;
+
+
 
 
 
@@ -1798,6 +1943,7 @@ int main()
 				//FinishStage
 				if (finish == 1)
 				{
+					clearTime2 = allTime.asSeconds();
 					heliR[1].move(100.0f * dt, 0.0f);
 					isMove = 0;
 					isJump = 0;
@@ -1922,18 +2068,36 @@ int main()
 					item.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
+				if (player.getGlobalBounds().intersects(item2.getGlobalBounds()))
+				{
+					co3.restart();
+					item2.setPOs({ -50.0f,-50.0f });
+					ulti = 1;
+				}
+				if (player.getGlobalBounds().intersects(item3.getGlobalBounds()))
+				{
+					co3.restart();
+					item3.setPOs({ -50.0f,-50.0f });
+					ulti = 1;
+				}
+				if (player.getGlobalBounds().intersects(item4.getGlobalBounds()))
+				{
+					co3.restart();
+					item4.setPOs({ -50.0f,-50.0f });
+					ulti = 1;
+				}
+				if (player.getGlobalBounds().intersects(item5.getGlobalBounds()))
+				{
+					co3.restart();
+					item5.setPOs({ -50.0f,-50.0f });
+					ulti = 1;
+				}
 				//Ultimate
 				if (Utime.asSeconds() >= 10)
 				{
 					ulti = 0;
 					co3.restart();
 				}
-
-
-
-
-
-
 
 
 
@@ -1987,6 +2151,12 @@ int main()
 				window.draw(heliL[0]);
 				window.draw(heliL[1]);
 
+				item.toDraw(window);
+				item2.toDraw(window);
+				item3.toDraw(window);
+				item4.toDraw(window);
+				item5.toDraw(window);
+
 
 				//PlatformShow
 				/*
@@ -2008,26 +2178,43 @@ int main()
 				{
 					enemy[i].toDraw(window);
 				}
-				//window.draw(truck);
-				//window.draw(truck2);
+				window.draw(truck);
+				window.draw(truck2);
 
 				window.draw(heart);
 				window.draw(mana);
 				window.draw(lblStage);
 				window.draw(lblTime);
+				
 
-
-
-
-				item.toDraw(window);
-
-				if (faceRight == 1)
+				if (alive == 1)
 				{
-					player.toDrawR(window);
+					if (faceRight == 1)
+					{
+						player.toDrawR(window);
+					}
+					else
+					{
+						player.toDrawL(window);
+					}
 				}
 				else
 				{
-					player.toDrawL(window);
+					if (flash.asSeconds() >= 0.15 )
+					{
+						if (faceRight == 1)
+						{
+							player.toDrawR(window);
+						}
+						else
+						{
+							player.toDrawL(window);
+						}
+					}
+					if (flash.asSeconds() >=0.35)
+					{
+						co6.restart();
+					}
 				}
 				//Draw
 				window.display();
@@ -2059,12 +2246,15 @@ int main()
 			music.play();
 
 			//skill music
-			sf::SoundBuffer soundBang, soundJump;
+			sf::SoundBuffer soundBang, soundJump, soundHert;
 			soundBang.loadFromFile("bang.wav");
 			soundJump.loadFromFile("musJump.wav");
-			sf::Sound sBang, sJump;
+			soundHert.loadFromFile("hert.ogg");
+			sf::Sound sBang, sJump, sHert;
 			sBang.setBuffer(soundBang);
 			sJump.setBuffer(soundJump);
+			sHert.setBuffer(soundHert);
+			sHert.setVolume(30.0);
 			sBang.setVolume(30.0);
 			sJump.setVolume(30.0);
 
@@ -2106,20 +2296,18 @@ int main()
 			mana.setPosition(0, 50);
 
 			//BackGroundAnimation
-			sf::Texture heli1, heli2, texrope, tr, tr2;
+			sf::Texture heli1, texrope;
 			heli1.loadFromFile("helicopterRanimation.png");
-			heli2.loadFromFile("helicopterLanimation.png");
-			texrope.loadFromFile("ropes.png");
-			tr2.loadFromFile("tr2.png");
-			tr.loadFromFile("tr.png");
-			sf::Sprite heliR, rope ;
+			texrope.loadFromFile("rope.png");
+
+			sf::Sprite heliR, rope;
 			heliR.setTexture(heli1);
-			heliR.setPosition(2434.0, 65.0);
+			heliR.setPosition(8413.0, 30.0);
 
 			Animetion helicopR(&heli1, sf::Vector2u(1, 4), 0.05f);
-			
+
 			rope.setTexture(texrope);
-			rope.setPosition(9000.0, 20.0);
+			rope.setPosition(8540.0, 40.0);
 
 			//Clock_use
 			sf::Clock co1; //Lswitch
@@ -2128,30 +2316,30 @@ int main()
 			sf::Clock co4; //jumpBlock
 			sf::Clock dtclock; //deltaTime
 			sf::Clock cmanaClock; //manaGain
+			sf::Clock co5; //hertCool
+			sf::Clock co6; //flash
+
+			sf::Clock gClock; //alltime
+
+			//Boss
+			sf::Clock bossClock; //bossColor
+			sf::Clock co7; //bossShoot 
+			sf::Clock co8; //ItemDropBoss
 
 
 			//PlayerObject
 			Player player({ 84.0,112.0 });
 			player.setOrigin();
-			player.setPos({ 12000.0,664.0 });
+			player.setPos({ 200.0,664.0 });
 			sf::Vector2f playerHalf = player.getSize() / 2.0f;
 
 			//item
 			srand(time(0));
-			int randomItem = rand() % 3;
-			Item item;
-			if (randomItem == 1)
-			{
-				item.setPOs({ 1300.0,380.0 });
-			}
-			else if (randomItem == 2)
-			{
-				item.setPOs({ 1300.0,100 });
-			}
-			else
-			{
-				item.setPOs({ 1300.0,600.0 });
-			}
+			Item item, item2,itemBoss;
+			item.setPOs({1188, 300});
+			item2.setPOs({4895,50});
+			itemBoss.setPOs({ -50,-50 });
+
 
 			//skillPlayer
 			Skill skilli[12], skillf[12], skillu[12];
@@ -2163,52 +2351,76 @@ int main()
 			}
 
 			//enemy
-			Enemy enemy[21];
+			Enemy enemy[25];
 			//White
-			/*enemy[0].set0();
-			enemy[0].setPos({ 2452,670 });
-			enemy[1].set0();
-			enemy[1].setPos({ 9350,670 });
 			enemy[0].set0();
-			enemy[0].setPos({ 2452,670 });
+			enemy[0].setPos({ 3179,571 });
 			enemy[1].set0();
-			enemy[1].setPos({ 9350,670 });
+			enemy[1].setPos({ 5675,670 });
+			enemy[2].set0();
+			enemy[2].setPos({ 9797,467 });
+			enemy[3].set0();
+			enemy[3].setPos({ 10378,440 });
+			enemy[4].set0();
+			enemy[4].setPos({ 11830,440 });
 			//Blue
-			enemy[2].set1();
-			enemy[2].setPos({ 4360,670 });
-			enemy[3].set1();
-			enemy[3].setPos({ 4680,670 });
-			enemy[4].set1();
-			enemy[4].setPos({ 8590, 285 });
-			enemy[2].set1();
-			enemy[2].setPos({ 4360,670 });
-			enemy[3].set1();
-			enemy[3].setPos({ 4680,670 });
-			enemy[4].set1();
-			enemy[4].setPos({ 8590, 285 });
+			enemy[5].set1();
+			enemy[5].setPos({ 1041,407 });
+			enemy[6].set1();
+			enemy[6].setPos({ 3472,416 });
+			enemy[7].set1();
+			enemy[7].setPos({ 5505,670 });
+			enemy[8].set1();
+			enemy[8].setPos({ 6577,235 });
+			enemy[9].set1();
+			enemy[9].setPos({ 9494,403 });
+			enemy[10].set1();
+			enemy[10].setPos({ 9965,92 });
+			enemy[11].set1();
+			enemy[11].setPos({10831,440 });
+			enemy[12].set1();
+			enemy[12].setPos({ 11548,440 });
+			enemy[13].set1();
+			enemy[13].setPos({ 12012,440 });
 			//Red
-			enemy[5].set2();
-			enemy[5].setPos({ 3115,670 });
-			enemy[6].set2();
-			enemy[6].setPos({ 4515,670 });
-			enemy[7].set2();
-			enemy[7].setPos({ 9120,670 });
-			enemy[8].set2();
-			enemy[8].setPos({ 11100,670 });
+			enemy[14].set2();
+			enemy[14].setPos({ 4506,394 });
+			enemy[15].set2();
+			enemy[15].setPos({ 5845,670 });
+			enemy[16].set2();
+			enemy[16].setPos({ 6512,524 });
+			enemy[17].set2();
+			enemy[17].setPos({ 9271,516 });
+			enemy[18].set2();
+			enemy[18].setPos({ 9894,268 });
+			enemy[19].set2();
+			enemy[19].setPos({ 10636,440});
+			enemy[20].set2();
+			enemy[20].setPos({ 11034,440 });
+			enemy[21].set2();
+			enemy[21].setPos({ 11689,440 });
 			//Violet
-			enemy[9].set3();
-			enemy[9].setPos({ 5693,590 });
-			enemy[10].set3();
-			enemy[10].setPos({ 9560,670 });
-			enemy[11].set3();
-			enemy[11].setPos({ 10240,590 });*/
+			enemy[22].set3();
+			enemy[22].setPos({ 1700,670 });
+			enemy[23].set3();
+			enemy[23].setPos({ 9597,593 });
+			enemy[24].set3();
+			enemy[24].setPos({ 12390,670 });
+
+			//Boss
+			Enemy boss;
+			boss.setBoss();
+			boss.setPos({14750,470});
+			
+
+
 
 
 			Block b1;
 			vector<Block> blocks;
 
 			sf::Vector2f pos[27], siz[27];
-			
+
 
 			pos[0] = { 8413,30 };		//helicop
 			pos[1] = { 4062,622 };		//box
@@ -2218,24 +2430,24 @@ int main()
 			pos[5] = { 12743,622 };
 			pos[6] = { 12743,530 };
 			pos[7] = { 12841,622 };
-			pos[8] = { 2134,144 };		//platform	
-			pos[9] = { 2592,86 };
-			pos[10] = { 3232,136 };
-			pos[11] = { 3390,44 };
-			pos[12] = { 4275,45 };
-			pos[13] = { 4452,100 };
-			pos[14] = { 3232,136 };
-			pos[15] = { 3390,44 };
-			pos[16] = { 4275,45 };
-			pos[17] = { 4452,100 };
-			pos[18] = { 4452,100 };
-			pos[19] = { 4452,100 };
-			pos[20] = { 4452,100 };
-			pos[21] = { 4452,100 };
-			pos[22] = { 4452,100 };
-			pos[23] = { 4452,100 };
-			pos[24] = { 4452,100 };
-			pos[25] = { 14614.0,385 };		//finish
+			pos[8] = { 933,455 };		//platform	
+			pos[9] = { 1755,585 };
+			pos[10] = { 2075,478 };
+			pos[11] = { 2505,620 };
+			pos[12] = { 4300,444 };
+			pos[13] = { 5108,292 };
+			pos[14] = { 6631,625 };
+			pos[15] = { 7188,500 };
+			pos[16] = { 7468,665 };
+			pos[17] = { 7651,258 };
+			pos[18] = { 7758,534 };
+			pos[19] = { 8142,390 };
+			pos[20] = { 13455,560 };
+			pos[21] = { 13867,409 };
+			pos[22] = { 0,-100 };			//floor
+			pos[23] = { 0,-100 };
+			pos[24] = { 0,-100 };
+			pos[25] = { 8543,500 };		//finish
 
 
 			siz[0] = { 397,128 };		//helicop
@@ -2246,23 +2458,23 @@ int main()
 			siz[5] = { 98,98 };
 			siz[6] = { 98,98 };
 			siz[7] = { 98,98 };
-			siz[8] = { 190,25 };		//platform	
-			siz[9] = { 190,124 };
-			siz[10] = { 190,25 };
-			siz[11] = { 170,104 };
-			siz[12] = { 190,124 };
-			siz[13] = { 145,32 };
-			siz[14] = { 190,25 };
-			siz[15] = { 170,104 };
-			siz[16] = { 190,124 };
-			siz[17] = { 145,32 };
-			siz[18] = { 145,32 };
-			siz[19] = { 145,32 };
-			siz[20] = { 145,32 };
-			siz[21] = { 145,32 };
-			siz[22] = { 145,32 };
-			siz[23] = { 145,32 };
-			siz[24] = { 145,32 };
+			siz[8] = { 490,46 };		//platform	
+			siz[9] = { 165,46 };
+			siz[10] = { 165,46 };
+			siz[11] = { 750,46 };
+			siz[12] = { 470,46 };
+			siz[13] = { 306,46 };
+			siz[14] = { 385,46 };
+			siz[15] = { 183,46 };
+			siz[16] = { 183,46 };
+			siz[17] = { 180,35 };
+			siz[18] = { 285,35 };
+			siz[19] = { 121,46 };
+			siz[20] = { 203,37 };
+			siz[21] = { 290,46 };
+			siz[22] = { 1680,69 };		//floor
+			siz[23] = { 3060,69 };
+			siz[24] = { 3487,69 };
 			siz[25] = { 168,23 };		//finish
 
 
@@ -2280,7 +2492,7 @@ int main()
 			int  onGround = 1, groundHeigh = 662, boxx = 0;
 
 			//Heart
-			int cheart = 6, hert = 0, hertspeed = 0;
+			int cheart = 6, hert = 0, hertspeed = 0,alive=1;
 
 			//block
 			float dx, dy;
@@ -2289,9 +2501,21 @@ int main()
 
 			//enemy
 			int loopEnemy = 0, ebus2 = 0, dashgo1 = 0, dashgo2 = 0, jumppoint1 = 0, jumppoint2 = 0, downpoint1 = 0, downpoint2 = 0;
+			int go6 = 0, go16 = 0, go8 = 0, go17 = 0, go9 = 0, go23 = 0, go2 = 0, go18 = 0, go10 = 0 ;
+			int go3 = 0, go19 = 0, go11 = 0, go20 = 0, go12 = 0, go21 = 0, go4 = 0, go13 = 0;
+
+			//view
+			int lock = 0;
+
+			//Boss
+			int clear = 0, weak,come=0,bossHp=35;
+			//bullboss
+			int bossgo=0, speedBoss1 = 0, speedBoss2 = 0; 
+			int speedBoss3 = 0, speedBoss4 = 0, speedBoss0 = 0, colorBull[5], weakBull[5];
+			Enemy bossBullet[5];
 
 
-			//------------------------------------------------------IN Game stage II------------------------
+			//------------------------------------------------------IN Game stage III------------------------
 			while (window.isOpen())
 			{
 				dt = dtclock.restart().asSeconds();
@@ -2335,6 +2559,14 @@ int main()
 				sf::Time Utime = co3.getElapsedTime();
 				sf::Time JumpCool = co4.getElapsedTime();
 				sf::Time gainMana = cmanaClock.getElapsedTime();
+				sf::Time hertCool = co5.getElapsedTime();
+				sf::Time flash = co6.getElapsedTime();
+
+				sf::Time allTime = gClock.getElapsedTime();
+
+				sf::Time bossTime = bossClock.getElapsedTime();
+				sf::Time bossShoot = co7.getElapsedTime();
+				sf::Time bossItem = co8.getElapsedTime();
 
 
 
@@ -2349,6 +2581,7 @@ int main()
 						Yspeed = -700.0f;
 					}
 				}
+
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 				{
 					Lspeed = 600.0f;
@@ -2428,6 +2661,18 @@ int main()
 				{
 					Rspeed = 0;
 				}
+				if (lock == 1)
+				{
+					if (player.getX() - player.getSize().x / 2.0f <= 13433)
+					{
+						hert = 1;
+						hertspeed = 900;
+					}
+					else if (player.getX() - player.getSize().x / 2.0f <= 13439)
+					{
+						Lspeed = 0;
+					}
+				}
 
 				//Mana_Charge & Use
 				if (cmana == manax)
@@ -2451,7 +2696,7 @@ int main()
 
 
 				//BlockSet;
-				if (size < 28)
+				if (size < 27)
 				{
 					b1.set({ pos[size] }, { siz[size] });
 					blocks.push_back(b1);
@@ -2461,61 +2706,42 @@ int main()
 
 
 				//EnemyCollide_Player
-				if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+				if (hertCool.asSeconds() >= 1.5)
 				{
-					if (loopEnemy <= 8)
+					alive = 1;
+				}
+				if (alive == 1)
+				{
+					for (int loopEnemy = 0; loopEnemy < 25; loopEnemy++)
 					{
-						cheart -= 1;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
-					}
-					else
-					{
-						cheart -= 2;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
-					}
-					if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
-						hert = -1;
-					else
-						hert = 1;
+						if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
+						{
+							if (loopEnemy <= 17)
+							{
+								cheart -= 1;
+								pickheart << "h" << cheart << ".png";
+								h6.loadFromFile(pickheart.str());
+								pickheart.str("");
+							}
+							else
+							{
+								cheart -= 2;
+								pickheart << "h" << cheart << ".png";
+								h6.loadFromFile(pickheart.str());
+								pickheart.str("");
+							}
+							if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
+								hert = -1;
+							else
+								hert = 1;
 
-					hertspeed = 1000.0f;
-				}
-				loopEnemy += 1;
-				if (loopEnemy == 12)
-				{
-					loopEnemy = 0;
-				}
-				if (enemy[loopEnemy].getGlobalBounds().intersects(player.getGlobalBounds()))
-				{
-					if (loopEnemy <= 8)
-					{
-						cheart -= 1;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
+							hertspeed = 1200.0f;
+							sHert.play();
+							co5.restart();
+							alive = 0;
+							finish = 0;
+						}
 					}
-					else
-					{
-						cheart -= 2;
-						pickheart << "h" << cheart << ".png";
-						h6.loadFromFile(pickheart.str());
-						pickheart.str("");
-					}
-					if (player.getX() - enemy[loopEnemy].getPos().x <= 0)
-						hert = -1;
-					else
-						hert = 1;
-
-					hertspeed = 1000.0f;
-				}
-				loopEnemy += 1;
-				if (loopEnemy == 12)
-				{
-					loopEnemy = 0;
 				}
 
 				//Enemypush
@@ -2575,7 +2801,7 @@ int main()
 										Yspeed = -700.0f;
 									}
 								}
-								if (i == 47)
+								if (i == 25)
 								{
 									finish = 1;
 								}
@@ -2610,7 +2836,7 @@ int main()
 				for (int j = 1; j <= scount; j++)
 				{
 					//white
-					for (int i = 0; i <= 1; i++)
+					for (int i = 0; i <= 4; i++)
 					{
 						if (skillf[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
 						{
@@ -2629,7 +2855,7 @@ int main()
 						}
 					}
 					//blue
-					for (int i = 2; i <= 4; i++)
+					for (int i = 5; i <= 13; i++)
 					{
 						if (skilli[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
 						{
@@ -2643,7 +2869,7 @@ int main()
 						}
 					}
 					//red
-					for (int i = 5; i <= 8; i++)
+					for (int i = 14; i <= 21; i++)
 					{
 						if (skillf[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
 						{
@@ -2657,7 +2883,7 @@ int main()
 						}
 					}
 					//violet
-					for (int i = 9; i <= 11; i++)
+					for (int i = 22; i <= 24; i++)
 					{
 						if (skillu[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
 						{
@@ -2665,7 +2891,7 @@ int main()
 							skillu[j].setPos({ -50,-50 });
 						}
 					}
-					for (int i = 1; i <= 11; i++)
+					for (int i = 1; i <= 24; i++)
 					{
 						if (skillf[j].getGlobalBounds().intersects(enemy[i].getGlobalBounds()))
 						{
@@ -2676,71 +2902,117 @@ int main()
 							skilli[j].setPos({ -50,-50 });
 						}
 					}
+					if (skillu[j].getX() >= position.x + 1580)
+					{
+						skillu[j].setPos({ -50,-50 });
+					}
+					if (skilli[j].getX() >= position.x + 1580)
+					{
+						skilli[j].setPos({ -50,-50 });
+					}
+					if (skillf[j].getX() >= position.x + 1580)
+					{
+						skillf[j].setPos({ -50,-50 });
+					}
 				}
 
-				/*enemy[0].Pattern0(dt);
 
-				enemy[4].Pattern1(dt, 8390, 8790);
-				enemy[5].Pattern1(dt, 2915, 3355);
-				enemy[8].Pattern1(dt, 10900, 11300);
+				//enemyAttack
 
-				//Buss
-				enemy[2].Pattern1(dt, 3760, 4660);
-				enemy[6].Pattern1(dt, 3915, 4815);
-				enemy[3].Pattern1(dt, 4080, 4980);
+				enemy[5].Pattern1(dt, 1041, 1360);
+				enemy[0].Pattern1(dt, 2580, 3160);
+				enemy[14].Pattern1(dt, 4360, 4720);
+				enemy[24].Pattern1(dt, 12240, 12670);
+				//bus
+				enemy[7].Pattern1(dt, 4310, 5940);
+				enemy[1].Pattern1(dt, 4480, 6110);
+				enemy[15].Pattern1(dt, 4650, 6280);
 
-
-				if (player.getX() >= 7650)	ebus2 = 1;
-				if (ebus2 == 1)
+				//trap
+				if (player.getX() >= 2100)
 				{
-					enemy[7].Pattern1(dt, 7720, 9170);
-					enemy[1].Pattern1(dt, 7950, 9400);
-					enemy[10].Pattern1(dt, 8160, 9610);
+					go6 = 1;
 				}
+				enemy[6].Pattern3(dt, go6, -1, 2);
+				if (player.getX() >= 4800&&player.getY()>=500 || player.getX()>=5300)
+				{
+					go16 = 1;
+				}
+				enemy[16].Pattern3(dt, go16, -1, 1);
+				if (player.getX() >= 4600&&player.getY()<=350 || player.getX()>=5300)
+				{
+					go8 = 1;
+				}
+				enemy[8].Pattern3(dt, go8, -1, 2);
+				if (player.getX() >= 7300)
+				{
+					go17 = 1;
+					go9= 1;
+					go23 = 1;
+					go2= 1;
+					go18 = 1;
+					go10 = 1;
+				}
+				enemy[17].Pattern3(dt, go17, -1, 3);
+				enemy[9].Pattern3(dt, go9, -1, 3);
+				enemy[23].Pattern3(dt, go23, -1, 3);
+				enemy[2].Pattern3(dt, go2, -1, 3);
+				enemy[18].Pattern3(dt, go18, -1, 3);
+				enemy[10].Pattern3(dt, go10, -1, 3);
 
-				//Dash
-				if (player.getX() >= 6300)
-				{
-					dashgo1 = 1;
-				}
-				if (enemy[9].getPos().x >= 6600)
-				{
-					jumppoint1 = 1;
-				}
-				if (enemy[9].getPos().x >= 6050)
-				{
-					downpoint1 = 1;
-				}
-				enemy[9].Pattern2(dt, dashgo1, jumppoint1, downpoint1);*/
+				enemy[22].Pattern3(dt, 1, -1, 3);
 
-				/*
-				if (player.getX() >= 6500)
-				{
-					dashgo2 = 1;
-				}
-				if (enemy[11].getPos().x >= 6600)
-				{
-					jumppoint2 = 1;
-				}
-				if (enemy[11].getPos().x >= 6050)
-				{
-					downpoint2 = 1;
-				}
-				enemy[11].Pattern2(dt, dashgo2, jumppoint2, downpoint2);*/
 
+				if (player.getX() >= 8770)
+				{
+					go3 = 1;
+				}
+				enemy[3].Pattern3(dt, go3, -1, 1);
+
+				if (player.getX() >= 9085)
+				{
+					go19 = 1;
+					go11= 1;
+					go20 = 1;
+				}
+				enemy[19].Pattern3(dt, go19, -1, 3);
+				enemy[11].Pattern3(dt, go11, -1, 3);
+				enemy[20].Pattern3(dt, go20, -1, 3);
+
+				if (player.getX() >= 9670)
+				{
+					go12 = 1;
+					go21 = 1;
+					go4 = 1;
+					go13 = 1;
+				}
+				enemy[12].Pattern3(dt, go12, -1, 3);
+				enemy[21].Pattern3(dt, go21, -1, 3);
+				enemy[4].Pattern3(dt, go4, -1, 3);
+				enemy[13].Pattern3(dt, go13, -1, 3);
+
+
+				
+
+				
+				
 
 
 
 				//FinishStage
 				if (finish == 1)
 				{
-					heliR.move(100.0f * dt, 0.0f);
+					heliR.move(200.0f * dt, 0.0f);
 					isMove = 0;
 					isJump = 0;
 					Yspeed = 0;
 					Yspeed -= 25.0f;
-					player.moveRight(100.0f * dt);
-					rope.move(100.0f * dt, 0.0f);
+					player.moveRight(200.0f * dt);
+					rope.move(200.0f * dt, 0.0f);
+				}
+				if (player.getX() >= 11900)
+				{
+					finish = 0;
 				}
 
 				//Dead
@@ -2753,8 +3025,25 @@ int main()
 				}
 
 
+				//fallDown
+				if (player.getX() >= 1630 && player.getX() <= 3450)
+				{
+					groundHeigh = 1800;
+				}
+				else if (player.getX() >= 6440&& player.getX() <=11690 )
+				{
+					groundHeigh = 1800;
+				}
+				else
+				{
+					groundHeigh = 662;
+				}
 
-
+				if (player.getY() >= 900)
+				{
+					cheart = 0;
+				}
+				
 
 
 				//playerDoing
@@ -2789,8 +3078,6 @@ int main()
 						onGround = 1;
 					}
 				}
-
-
 
 
 				//skillDirect
@@ -2853,21 +3140,294 @@ int main()
 					item.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
+				if (player.getGlobalBounds().intersects(item2.getGlobalBounds()))
+				{
+					co3.restart();
+					item2.setPOs({ -50.0f,-50.0f });
+					ulti = 1;
+				}
+				if (player.getGlobalBounds().intersects(itemBoss.getGlobalBounds()))
+				{
+					co3.restart();
+					itemBoss.setPOs({ -50.0f,-50.0f });
+					ulti = 1;
+				}
 				//Ultimate
-				if (Utime.asSeconds() >= 12)
+				if (Utime.asSeconds() >= 10)
 				{
 					ulti = 0;
 					co3.restart();
 				}
 
 
-				std::cout << player.getX() << std::endl;
+				//cout << player.getX() << "  "<< player.getY() <<endl;
+
+
+				if (player.getX() >= 13900)
+				{
+					lock = 1;
+				}
+				if (lock != 1)
+				{
+					co7.restart();
+				}
+
+				//BossStage=============
+
+				if (lock == 1)
+				{
+					//SetBossColor
+					boss.Pattern0(dt);
+					if (bossTime.asSeconds() >= 20)
+					{
+						weak = 2;
+						boss.set2();
+					}
+					else if (bossTime.asSeconds() >= 10)
+					{
+						weak = 1;
+						boss.set1();
+					}
+					else
+					{
+						weak = 3;
+						boss.set3();
+					}
+					if (bossTime.asSeconds() >= 30)
+					{
+						bossClock.restart();
+					}
+
+					//ItemDrop
+					if (bossItem.asSeconds() >= 18)
+					{
+						co8.restart();
+						itemBoss.setPOs({ 14000,300 });
+					}
+
+					//vsBoss
+					if (alive == 1)
+					{
+						if (player.getGlobalBounds().intersects(boss.getGlobalBounds()))
+						{
+							cheart -= 2;
+							pickheart << "h" << cheart << ".png";
+							h6.loadFromFile(pickheart.str());
+							pickheart.str("");
+							hert = -1;
+							hertspeed = 1200.0f;
+							alive = 0;
+							co5.restart();
+							sHert.play();
+						}
+					}
+
+					//BossShoot
+					if (bossShoot.asSeconds() >= 7)
+					{
+						co7.restart();
+						speedBoss0 = rand() % 5;
+						speedBoss1 = rand() % 5;
+						speedBoss2 = rand() % 5;
+						speedBoss3 = rand() % 5;
+						speedBoss4 = rand() % 5;
+
+						colorBull[0] = rand() % 100;
+						colorBull[1] = rand() % 100;
+						colorBull[2] = rand() % 100;
+						colorBull[3] = rand() % 100;
+						colorBull[4] = rand() % 100;
+
+						for (int i = 0; i <= 4; i++)
+						{
+							if (colorBull[i]<=40)
+							{
+								bossBullet[i].set1();
+								weakBull[i] = 1;
+							}
+							else if (colorBull[i]<=80 )
+							{
+								bossBullet[i].set2();
+								weakBull[i] = 2;
+							}
+							else if (colorBull[i] <=95)
+							{
+								bossBullet[i].set3();
+								weakBull[i] = 3;
+							}
+							else
+							{
+								bossBullet[i].set0();
+								weakBull[i] = 0;
+							}
+						}
+						bossBullet[0].setPos({ 14500,200});
+						bossBullet[1].setPos({ 14500,300});
+						bossBullet[2].setPos({ 14500,400 });
+						bossBullet[3].setPos({ 14500,500 });
+						bossBullet[4].setPos({ 14500,600 });
+
+						bossgo = 1;
+					}
+					bossBullet[0].Pattern4(dt,bossgo, speedBoss0);
+					bossBullet[1].Pattern4(dt, bossgo, speedBoss1);
+					bossBullet[2].Pattern4(dt, bossgo, speedBoss2);
+					bossBullet[3].Pattern4(dt, bossgo, speedBoss3);
+					bossBullet[4].Pattern4(dt, bossgo, speedBoss4);
+
+					//skillVersus
+					for (int j = 1; j <= scount; j++)
+					{
+						//shootBossBull
+						for (int i = 0; i <= 4; i++)
+						{
+							if (bossBullet[i].getGlobalBounds().intersects(skilli[j].getGlobalBounds()))
+							{
+								if (weakBull[i] == 1)
+								{
+									bossBullet[i].setPos({ -300,-300 });
+									skilli[j].setPos({ -50,-50 });
+								}
+								if (weakBull[i] == 0)
+								{
+									bossBullet[i].setPos({ -300,-300 });
+									skilli[j].setPos({ -50,-50 });
+								}
+								else
+								{
+									skilli[j].setPos({ -50,-50 });
+								}
+							}
+							if (bossBullet[i].getGlobalBounds().intersects(skillf[j].getGlobalBounds()))
+							{
+								if (weakBull[i] == 2)
+								{
+									bossBullet[i].setPos({ -300,-300 });
+									skillf[j].setPos({ -50,-50 });
+								}
+								if (weakBull[i] == 0)
+								{
+									bossBullet[i].setPos({ -300,-300 });
+									skillf[j].setPos({ -50,-50 });
+								}
+								else
+								{
+									skillf[j].setPos({ -50,-50 });
+								}
+							}
+							if(bossBullet[i].getGlobalBounds().intersects(skillu[j].getGlobalBounds()))
+							{
+								bossBullet[i].setPos({ -300,-300 });
+								skillu[j].setPos({ -50,-50 });
+							}
+						}
+
+
+						//shootBoss
+						if (boss.getGlobalBounds().intersects(skilli[j].getGlobalBounds()))
+						{
+							if (weak == 1)
+							{
+								skilli[j].setPos({ -50,-50 });
+								bossHp -= 1;
+							}
+							else
+							{
+								skilli[j].setPos({ -50,-50 });
+							}
+						}
+						if (boss.getGlobalBounds().intersects(skillf[j].getGlobalBounds()))
+						{
+							if (weak == 2)
+							{
+								skillf[j].setPos({ -50,-50 });
+								bossHp -= 1;
+							}
+							else
+							{
+								skillf[j].setPos({ -50,-50 });
+							}
+						}
+						if (boss.getGlobalBounds().intersects(skillu[j].getGlobalBounds()))
+						{
+							skillu[j].setPos({ -50,-50 });
+							bossHp -= 1;
+						}
+					}
+
+					//VersusBUllet
+					for (int i = 0; i <= 4; i++)
+					{
+						if (bossBullet[i].getGlobalBounds().intersects(player.getGlobalBounds()))
+						{
+							if (alive == 1)
+							{
+								if (weakBull[i] == 3)
+								{
+									cheart -= 2;
+									pickheart << "h" << cheart << ".png";
+									h6.loadFromFile(pickheart.str());
+									pickheart.str("");
+									hert = -1;
+									hertspeed = 500.0f;
+									alive = 0;
+									co5.restart();
+									sHert.play();
+								}
+								else
+								{
+									cheart -= 1;
+									pickheart << "h" << cheart << ".png";
+									h6.loadFromFile(pickheart.str());
+									pickheart.str("");
+									hert = -1;
+									hertspeed = 900.0f;
+									alive = 0;
+									co5.restart();
+									sHert.play();
+								}
+							}
+						}
+					}
+
+
+					if (bossHp <= 0)
+					{
+						boss.setPos({ -500,-500 });
+						clear = 1;
+					}
+
+				}
+				
 
 
 
 
 
 
+				//StageClear
+				if (clear == 1)
+				{
+					clearTime3 = allTime.asSeconds();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					RecordScore = 1;
+					break;
+				}
 
 
 				//viewUpdate
@@ -2886,6 +3446,16 @@ int main()
 				{
 					position.y = 0;
 				}
+				if (position.y >= 0)
+				{
+					position.y = 0;
+				}
+				
+				if (lock == 1)
+				{
+					position.x = 13440;
+				}
+
 				view.reset(sf::FloatRect(position.x, position.y, window.getSize().x, window.getSize().y));
 				lblStage.setPosition({ position.x + 1420.0f,10.0f });
 				lblTime.setPosition({ position.x + 1420.0f,50.0f });
@@ -2908,14 +3478,16 @@ int main()
 				heliR.setTextureRect(helicopR.uvRect);
 				window.draw(heliR);
 				
-
+				item.toDraw(window);
+				item2.toDraw(window);
+				itemBoss.toDraw(window);
 
 				//PlatformShow
-				
+				/*
 				for (size_t i = 0; i < blocks.size(); i++)
 				{
 					window.draw(blocks[i].body);
-				}
+				}*/
 				
 
 
@@ -2925,29 +3497,49 @@ int main()
 					skillf[i].toDraw(window);
 					skillu[i].toDraw(window);
 				}
-				for (int i = 0; i < 12; i++)
+				for (int i = 0; i < 25; i++)
 				{
 					enemy[i].toDraw(window);
 				}
-				
+				boss.toDraw(window);
+				for (int i = 0; i < 5; i++)
+				{
+					bossBullet[i].toDraw(window);
+				}
 
 				window.draw(heart);
 				window.draw(mana);
 				window.draw(lblStage);
 				window.draw(lblTime);
 
-
-
-
-				item.toDraw(window);
-
-				if (faceRight == 1)
+				if (alive == 1)
 				{
-					player.toDrawR(window);
+					if (faceRight == 1)
+					{
+						player.toDrawR(window);
+					}
+					else
+					{
+						player.toDrawL(window);
+					}
 				}
 				else
 				{
-					player.toDrawL(window);
+					if (flash.asSeconds() >= 0.15)
+					{
+						if (faceRight == 1)
+						{
+							player.toDrawR(window);
+						}
+						else
+						{
+							player.toDrawL(window);
+						}
+					}
+					if (flash.asSeconds() >= 0.35)
+					{
+						co6.restart();
+					}
 				}
 				//Draw
 				window.display();
@@ -2955,7 +3547,58 @@ int main()
 			}
 		}
 
+		//CalculateScore
+		if (RecordScore == 1)
+		{
+			score = 60000-(clearTime1*100 + clearTime2*100 + clearTime3*100);
+			if (score <= 0)
+			{
+				score = 0;
+			}
+			//read
+			readFile.open("highScore.txt");
+			if (readFile.is_open())
+			{
+				while (getline(readFile, readScore) && loopscore <= 5)
+				{
+					highScore[loopscore] = stoi(readScore);
+					loopscore += 1;
+				}
+			}
+			readFile.close();
 
+			//write
+			ofstream writeFile("highScore.txt");
+			if (writeFile.is_open())
+			{
+				for (int i = 1; i <= 5; i++)
+				{
+					if (score > highScore[i])
+					{
+						for (int j = 5; j >i ; j--)
+						{
+							highScore[j] = highScore[j-1];
+						}
+						highScore[i] = score;
+						break;
+					}
+				}
+				for (int i = 1; i <= 5; i++)
+				{
+					writeFile << highScore[i] << endl;
+				}
+
+			}
+			writeFile.close();
+
+			scoreboard = 1;
+		}
+
+		//ShowHighScore
+		if (scoreboard == 1)
+		{
+			
+		}
 
 		//GameOver
 		if (dead == 1)
@@ -2976,10 +3619,9 @@ int main()
 			while (true)
 			{
 				deadtime = codead.getElapsedTime();
-				if (deadtime.asSeconds()>=7.0|| sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+				if (deadtime.asSeconds()>=3.0)
 				{
 					codead.restart();
-					stage=0;
 					break;
 				}
 				window.clear(sf::Color::Red);
