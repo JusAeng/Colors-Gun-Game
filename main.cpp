@@ -41,6 +41,7 @@ int main()
 		//Menu
 		if (stage == 0)
 		{
+			stage = -1;
 			while (true)
 			{
 				while (window.pollEvent(ev))
@@ -63,7 +64,7 @@ int main()
 								ename = 1;
 								break;
 							case 1:
-								std::cout << "option !!";
+								RecordScore = 1;
 								break;
 							case 2:
 								window.close();
@@ -75,14 +76,14 @@ int main()
 				window.clear(sf::Color::Black);
 				menu.toDraw(window);
 				window.display();
-				if (ename==1)
+				if (ename==1||RecordScore==1)
 				{
 					break;
 				}
 			}
 		}
 		//Entername
-		if (ename == 1)
+		if (ename == 1 )
 		{
 			ename =0;
 			char name[15];
@@ -392,7 +393,7 @@ int main()
 						break;
 					case sf::Event::KeyPressed:
 						if (ev.key.code == sf::Keyboard::Escape)
-							window.close();
+						window.close();
 						break;
 					}
 				}
@@ -1365,7 +1366,7 @@ int main()
 			pos[27] = { 8498 + 2153,602 };
 			pos[28] = { 8632 + 2153,645 };
 			pos[29] = { 8636 + 2153,659 };
-			pos[30] = { 7633,544 };			//doubCar
+			pos[30] = { 7633,550 };			//doubCar
 			pos[31] = { 7728,502 };
 			pos[32] = { 7875,569 };
 			pos[33] = { 4968,617 };		//box
@@ -2159,8 +2160,8 @@ int main()
 
 
 				//PlatformShow
-				/*
-				for (size_t i = 0; i < blocks.size(); i++)
+				
+				/*for (size_t i = 0; i < blocks.size(); i++)
 				{
 					window.draw(blocks[i].body);
 				}*/
@@ -2519,6 +2520,7 @@ int main()
 			//bullboss
 			int bossgo=0, speedBoss1 = 0, speedBoss2 = 0; 
 			int speedBoss3 = 0, speedBoss4 = 0, speedBoss0 = 0, colorBull[5], weakBull[5];
+			int bullcount;
 			Enemy bossBullet[5];
 
 
@@ -3403,7 +3405,18 @@ int main()
 					{
 						boss.setPos({ -500,-500 });
 						co7.restart();
-						clear = 1;
+						bullcount = 0;
+						for (int i = 0; i <= 4; i++)
+						{
+							if (bossBullet[i].getPos().x <= 13100)
+							{
+								bullcount += 1;
+							}
+						}
+						if (bullcount == 5)
+						{
+							clear = 1;
+						}
 					}
 
 				}
@@ -3436,7 +3449,6 @@ int main()
 					}
 					
 				}
-				cout << win.getPosition().x << "  " << win.getPosition().y << endl;
 
 
 				//viewUpdate
@@ -3562,6 +3574,7 @@ int main()
 		//CalculateScore
 		if (RecordScore == 1)
 		{
+			RecordScore = 0;
 			score = 60000-(clearTime1*100 + clearTime2*100 + clearTime3*100);
 			if (score <= 0)
 			{
@@ -3609,7 +3622,63 @@ int main()
 		//ShowHighScore
 		if (scoreboard == 1)
 		{
-			
+			scoreboard = 0;
+			sf::Font font;
+			font.loadFromFile("BAUHS93.TTF");
+			sf::Text Scorelbl[6];
+
+			ostringstream arragesc[6];
+
+			for (int i = 1; i <= 5; i++)
+			{
+				arragesc[i] << highScore[i];
+			}
+			for (int i = 1; i <= 5; i++)
+			{
+				Scorelbl[i].setFont(font);
+				Scorelbl[i].setCharacterSize(40);
+				Scorelbl[i].setFillColor(sf::Color::White);
+				Scorelbl[i].setString(arragesc[i].str());
+			}
+			Scorelbl[1].setPosition(780,120);
+			Scorelbl[2].setPosition(780, 240);
+			Scorelbl[3].setPosition(780, 360);
+			Scorelbl[4].setPosition(780, 480);
+			Scorelbl[5].setPosition(780, 600);
+
+
+
+			while (true)
+			{	
+				while (window.pollEvent(ev))
+				{
+					switch (ev.type)
+					{
+					case sf::Event::KeyReleased:
+						switch (ev.key.code)
+						{
+						case sf::Keyboard::Enter:
+							stage = 0;
+							break;
+						case sf::Keyboard::Escape:
+							stage = 0;
+							break;
+						}
+					}
+				}
+				if (stage == 0)
+				{
+					break;
+				}
+				window.clear(sf::Color::Blue);
+
+				for (int i = 1; i <= 5; i++)
+				{
+					window.draw(Scorelbl[i]);
+				}
+
+				window.display();
+			}
 		}
 
 		//GameOver
@@ -3641,6 +3710,7 @@ int main()
 				window.display();
 			}
 		}
+
 	}
 
 
