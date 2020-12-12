@@ -48,6 +48,9 @@ int main()
 				{
 					switch (ev.type)
 					{
+					case sf::Event::Closed:
+						window.close();
+						break;
 					case sf::Event::KeyReleased:
 						switch (ev.key.code)
 						{
@@ -57,11 +60,12 @@ int main()
 						case sf::Keyboard::S:
 							menu.moveDown();
 							break;
-						case sf::Keyboard::Return:
+						case sf::Keyboard::Enter:
 							switch (menu.getPressItem())
 							{
 							case 0:
 								ename = 1;
+								cout << "fdsalfk";
 								break;
 							case 1:
 								RecordScore = 1;
@@ -93,18 +97,24 @@ int main()
 				{
 					switch (ev.type)
 					{
+					case sf::Event::Closed:
+						window.close();
+						break;
 					case sf::Event::KeyReleased:
 						switch (ev.key.code)
 						{
 						case sf::Keyboard::Enter:
 							stage = 1;
 							break;
+						case sf::Keyboard::Escape:
+							stage = 0;
+							break;
 						}
 					}
 				}
 				window.clear(sf::Color::Green);
 				window.display();
-				if (stage == 1)
+				if (stage == 1||stage==0)
 				{
 					break;
 				}
@@ -221,7 +231,14 @@ int main()
 			sf::Clock gClock;// alltime
 
 
-
+			//popUp
+			sf::Texture popTexQ0,popTexQ1;
+			popTexQ0.loadFromFile("popupQ0.png");
+			popTexQ1.loadFromFile("popupQ1.png");
+			sf::Sprite popup;
+			popup.setTexture(popTexQ0);
+			popup.setOrigin(sf::Vector2f(popup.getGlobalBounds().width / 2, popup.getGlobalBounds().height / 2));
+			int popon = 0,Q=0,backmenu=0;
 
 
 
@@ -380,6 +397,8 @@ int main()
 			int loopEnemy = 0, ebus2 = 0, dashgo1 = 0, dashgo2 = 0,jumppoint1=0,jumppoint2=0,downpoint1=0,downpoint2=0;
 
 
+
+
 			//------------------------------------------------------IN Game stage I------------------------
 			while (window.isOpen())
 			{
@@ -391,11 +410,64 @@ int main()
 					case sf::Event::Closed:
 						window.close();
 						break;
-					case sf::Event::KeyPressed:
+					case sf::Event::KeyReleased:
 						if (ev.key.code == sf::Keyboard::Escape)
-						window.close();
-						break;
+						{
+							popon = 1;
+							break;
+						}
+						if (ev.key.code == sf::Keyboard::Enter && popon==1)
+						{
+							if (Q == 0)
+							{
+								popon = 0;
+							}
+							else
+							{
+								backmenu = 1;
+								stage = 0;
+							}
+							break;
+						}
+
 					}
+					//popUp
+					/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+					{
+						popon = 1;
+					}
+					if (popon == 1)
+					{
+						popup.setPosition(position.x + 780, 390);
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+						{
+							Q = 1;
+							popup.setTexture(popTexQ1);
+						}
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+						{
+							Q = 0;
+							popup.setTexture(popTexQ0);
+						}
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+						{
+							if (Q == 0)
+							{
+								popon = 0;
+							}
+							else
+							{
+								stage = 0;
+								break;
+							}
+						}
+						Rspeed = 0;
+						Lspeed = 0;
+					}
+					else
+					{
+						popup.setPosition(-400, -400);
+					}*/
 				}
 				//RunTime
 				elapsed = clock.getElapsedTime();
@@ -877,6 +949,33 @@ int main()
 					break;
 				}
 		
+				//popUp
+				if (popon == 1)
+				{
+					popup.setPosition(position.x + 780, 390);
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+					{
+						Q = 1;
+						popup.setTexture(popTexQ1);
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+					{
+						Q = 0;
+						popup.setTexture(popTexQ0);
+					}
+					Rspeed = 0;
+					Lspeed = 0;
+				}
+				else
+				{
+					popup.setPosition(-400, -400);
+				}
+				if (backmenu == 1)
+				{
+					defaultView.reset(sf::FloatRect(0, 0, window.getSize().x, window.getSize().y));
+					window.setView(defaultView);
+					break;
+				}
 
 
 
@@ -1000,11 +1099,6 @@ int main()
 
 
 
-
-
-
-
-
 				//viewUpdate
 
 				position.x = player.getX() + 300 - (window.getSize().x / 2.0f);
@@ -1103,6 +1197,9 @@ int main()
 						co6.restart();
 					}
 				}
+
+				window.draw(popup);
+
 				//Draw
 				window.display();
 
@@ -1232,7 +1329,14 @@ int main()
 			sf::Clock co6; //playerFlash
 			sf::Clock gClock; //allTIme
 
-
+			//popUp
+			sf::Texture popTexQ0, popTexQ1;
+			popTexQ0.loadFromFile("popupQ0.png");
+			popTexQ1.loadFromFile("popupQ1.png");
+			sf::Sprite popup;
+			popup.setTexture(popTexQ0);
+			popup.setOrigin(sf::Vector2f(popup.getGlobalBounds().width / 2, popup.getGlobalBounds().height / 2));
+			int popon = 0, Q = 0, backmenu = 0;
 
 
 
@@ -1484,10 +1588,25 @@ int main()
 					case sf::Event::Closed:
 						window.close();
 						break;
-					case sf::Event::KeyPressed:
+					case sf::Event::KeyReleased:
 						if (ev.key.code == sf::Keyboard::Escape)
-							window.close();
-						break;
+						{
+							popon = 1;
+							break;
+						}
+						if (ev.key.code == sf::Keyboard::Enter && popon == 1)
+						{
+							if (Q == 0)
+							{
+								popon = 0;
+							}
+							else
+							{
+								backmenu = 1;
+								stage = 0;
+							}
+							break;
+						}
 					}
 				}
 				//RunTime
@@ -1968,7 +2087,33 @@ int main()
 					break;
 				}
 
-
+				//popUp
+				if (popon == 1)
+				{
+					popup.setPosition(position.x + 780, 390);
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+					{
+						Q = 1;
+						popup.setTexture(popTexQ1);
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+					{
+						Q = 0;
+						popup.setTexture(popTexQ0);
+					}
+					Rspeed = 0;
+					Lspeed = 0;
+				}
+				else
+				{
+					popup.setPosition(-400, -400);
+				}
+				if (backmenu == 1)
+				{
+					defaultView.reset(sf::FloatRect(0, 0, window.getSize().x, window.getSize().y));
+					window.setView(defaultView);
+					break;
+				}
 
 
 
@@ -2217,6 +2362,9 @@ int main()
 						co6.restart();
 					}
 				}
+
+				window.draw(popup);
+
 				//Draw
 				window.display();
 
@@ -2327,6 +2475,16 @@ int main()
 			sf::Clock co7; //bossShoot 
 			sf::Clock co8; //ItemDropBoss
 			sf::Clock co9; //congrateTIMe
+
+			//popUp
+			sf::Texture popTexQ0, popTexQ1;
+			popTexQ0.loadFromFile("popupQ0.png");
+			popTexQ1.loadFromFile("popupQ1.png");
+			sf::Sprite popup;
+			popup.setTexture(popTexQ0);
+			popup.setOrigin(sf::Vector2f(popup.getGlobalBounds().width / 2, popup.getGlobalBounds().height / 2));
+			int popon = 0, Q = 0, backmenu = 0;
+
 
 
 			//PlayerObject
@@ -2535,10 +2693,25 @@ int main()
 					case sf::Event::Closed:
 						window.close();
 						break;
-					case sf::Event::KeyPressed:
+					case sf::Event::KeyReleased:
 						if (ev.key.code == sf::Keyboard::Escape)
-							window.close();
-						break;
+						{
+							popon = 1;
+							break;
+						}
+						if (ev.key.code == sf::Keyboard::Enter && popon == 1)
+						{
+							if (Q == 0)
+							{
+								popon = 0;
+							}
+							else
+							{
+								backmenu = 1;
+								stage = 0;
+							}
+							break;
+						}
 					}
 				}
 				//RunTime
@@ -3031,6 +3204,34 @@ int main()
 					defaultView.reset(sf::FloatRect(0, 0, window.getSize().x, window.getSize().y));
 					window.setView(defaultView);
 					dead = 1;
+					break;
+				}
+
+				//popUp
+				if (popon == 1)
+				{
+					popup.setPosition(position.x + 780, 390);
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+					{
+						Q = 1;
+						popup.setTexture(popTexQ1);
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+					{
+						Q = 0;
+						popup.setTexture(popTexQ0);
+					}
+					Rspeed = 0;
+					Lspeed = 0;
+				}
+				else
+				{
+					popup.setPosition(-400, -400);
+				}
+				if (backmenu == 1)
+				{
+					defaultView.reset(sf::FloatRect(0, 0, window.getSize().x, window.getSize().y));
+					window.setView(defaultView);
 					break;
 				}
 
@@ -3565,6 +3766,11 @@ int main()
 
 				window.draw(win);
 
+				if (clear != 1)
+				{
+					window.draw(popup);
+				}
+
 				//Draw
 				window.display();
 
@@ -3654,6 +3860,9 @@ int main()
 				{
 					switch (ev.type)
 					{
+					case sf::Event::Closed:
+						window.close();
+						break;
 					case sf::Event::KeyReleased:
 						switch (ev.key.code)
 						{
