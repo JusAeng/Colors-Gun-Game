@@ -31,6 +31,10 @@ int main()
 	int replace,clearTime1=1000, clearTime2=1000, clearTime3=1000, score = 0;
 	int highScore[6], loopscore = 1;
 	string readScore;
+	
+	string name[6];
+	//
+
 
 	Menu menu(window.getSize().x, window.getSize().y);
 
@@ -65,7 +69,6 @@ int main()
 							{
 							case 0:
 								ename = 1;
-								cout << "fdsalfk";
 								break;
 							case 1:
 								RecordScore = 1;
@@ -90,7 +93,25 @@ int main()
 		if (ename == 1 )
 		{
 			ename =0;
-			char name[15];
+			
+			sf::Font fname;
+			fname.loadFromFile("BAUHS93.TTF");
+			sf::Text lblName;
+			lblName.setCharacterSize(40);
+			lblName.setFillColor(sf::Color::White);
+			lblName.setOrigin(sf::Vector2f(lblName.getGlobalBounds().width / 2,lblName.getGlobalBounds().height / 2));
+			lblName.setFont(fname);
+			lblName.setPosition(780,390);
+			
+			ostringstream showName;
+
+			sf::Clock cotype;
+			sf::Time cdtype=cotype.getElapsedTime();
+
+			char intname[9];
+
+			int loopname=1;
+
 			while (true)
 			{
 				while (window.pollEvent(ev))
@@ -112,7 +133,42 @@ int main()
 						}
 					}
 				}
-				window.clear(sf::Color::Green);
+				cdtype = cotype.getElapsedTime();
+				
+				if (loopname <= 8)
+				{
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && cdtype.asSeconds() >= 0.2)
+					{
+						cotype.restart();
+						intname[loopname] = 'A';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::B) && cdtype.asSeconds() >= 0.2)
+					{
+						cotype.restart();
+						intname[loopname] = 'B';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+				}
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Delete) && cdtype.asSeconds() >= 0.2)
+				{
+					
+				}
+
+				
+
+
+
+				window.clear(sf::Color(171,149,132));
+
+				lblName.setPosition(780-12*loopname, 390);
+				window.draw(lblName);
+
+
 				window.display();
 				if (stage == 1||stage==0)
 				{
