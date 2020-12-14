@@ -4282,16 +4282,11 @@ int main()
 			dead = 0;
 			sf::Clock codead;
 			sf::Time deadtime;
-			sf::Font fontdead;
-			sf::Text deadtext;
-			fontdead.loadFromFile("BAUHS93.TTF");
-			deadtext.setCharacterSize(150.0);
-			deadtext.setFont(fontdead);
-			deadtext.setPosition({ 410,270 });
-			deadtext.setFillColor(sf::Color::White);
-			ostringstream showdead;
-			showdead << "GAME OVER";
-			deadtext.setString(showdead.str());
+			sf::Sprite bgOVer;
+			sf::Texture bg;
+			bg.loadFromFile("gameover.png");
+			bgOVer.setTexture(bg);
+			
 
 			sf::SoundBuffer soundBye;
 			soundBye.loadFromFile("bye.wav");
@@ -4308,8 +4303,9 @@ int main()
 					codead.restart();
 					break;
 				}
-				window.clear(sf::Color::Red);
-				window.draw(deadtext);
+				window.clear();
+				
+				window.draw(bgOVer);
 				window.display();
 			}
 		}

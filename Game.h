@@ -12,9 +12,9 @@ class Item {
 public:
 	Item()
 	{
-		item.setSize(sf::Vector2f(40.0,40.0));
+		item.setSize(sf::Vector2f(50.0,50.0));
 		item.setFillColor(sf::Color::Yellow);
-		texture.loadFromFile("");
+		texture.loadFromFile("item.png");
 		item.setTexture(&texture);
 	}
 	void setPOs(sf::Vector2f pos)
