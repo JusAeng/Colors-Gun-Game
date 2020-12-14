@@ -28,8 +28,9 @@ int main()
 	int stage = 0,ename=0,dead=0,scoreboard=0, RecordScore = 0;
 
 	//score
-	int clearTime1=1000, clearTime2=1000, clearTime3=1000, score = 0;
+	int clearTime1 = 1000, clearTime2 = 1000, clearTime3 = 1000, score = 0, scoreshow = 0;;
 	int highScore[6], loopscore = 1;
+	int youwin = 0;
 	string readScore,readName;
 	
 	string name[6],playerName;
@@ -98,15 +99,24 @@ int main()
 		if (ename == 1 )
 		{
 			ename =0;
-			
+			youwin = 0;
+			score = 0;
+
+			sf::Texture bg;
+			bg.loadFromFile("bgname.png");
+			sf::Sprite namingbg;
+			namingbg.setTexture(bg);
+
 			sf::Font fname;
-			fname.loadFromFile("BAUHS93.TTF");
+			fname.loadFromFile("BRLNSDB.TTF");
 			sf::Text lblName;
-			lblName.setCharacterSize(40);
+			lblName.setCharacterSize(70);
 			lblName.setFillColor(sf::Color::White);
 			lblName.setOrigin(sf::Vector2f(lblName.getGlobalBounds().width / 2,lblName.getGlobalBounds().height / 2));
 			lblName.setFont(fname);
 			lblName.setPosition(780,390);
+			lblName.setOutlineThickness(5);
+			lblName.setOutlineColor(sf::Color(220,208,191));
 			
 			ostringstream showName;
 
@@ -378,9 +388,12 @@ int main()
 				}*/
 	
 
-				window.clear(sf::Color(171,149,132));
+				//window.clear(sf::Color(171,149,132));
+				window.clear();
 
-				lblName.setPosition(780-12*loopname, 390);
+				window.draw(namingbg);
+
+				lblName.setPosition(780-17*loopname, 270);
 				window.draw(lblName);
 
 
@@ -2660,23 +2673,31 @@ int main()
 			bground.setTexture(&bg);
 
 			//main music
-			sf::Music music;
-			music.openFromFile("mainSong.ogg");
-			music.setVolume(5.0);
+			sf::Music music,musicboss;
+			music.openFromFile("bossStage.wav");
+			music.setVolume(9.0);
 			music.play();
+			musicboss.openFromFile("bossFight.wav");
+			musicboss.setVolume(5.0);
 
 			//skill music
-			sf::SoundBuffer soundBang, soundJump, soundHert;
+			sf::SoundBuffer soundBang, soundJump, soundHert,soundCongrate,soundAlarm;
+			soundAlarm.loadFromFile("alarm.wav");
+			soundCongrate.loadFromFile("victory.wav");
 			soundBang.loadFromFile("bang.wav");
 			soundJump.loadFromFile("musJump.wav");
 			soundHert.loadFromFile("hert.ogg");
-			sf::Sound sBang, sJump, sHert;
+			sf::Sound sBang, sJump, sHert,sCon,sAlarm;
+			sAlarm.setBuffer(soundAlarm);
 			sBang.setBuffer(soundBang);
 			sJump.setBuffer(soundJump);
 			sHert.setBuffer(soundHert);
+			sCon.setBuffer(soundCongrate);
+			sCon.setVolume(35.0);
 			sHert.setVolume(30.0);
 			sBang.setVolume(30.0);
 			sJump.setVolume(30.0);
+			sAlarm.setVolume(10.0);
 
 			//upperText
 			sf::Font font;
@@ -2746,6 +2767,7 @@ int main()
 			sf::Clock co7; //bossShoot 
 			sf::Clock co8; //ItemDropBoss
 			sf::Clock co9; //congrateTIMe
+			sf::Clock co10; //sAlarm
 
 			//popUp
 			sf::Texture popTexQ0, popTexQ1;
@@ -3021,6 +3043,7 @@ int main()
 				sf::Time bossShoot = co7.getElapsedTime();
 				sf::Time bossItem = co8.getElapsedTime();
 				sf::Time congrateTime = co9.getElapsedTime();
+				sf::Time alarmTime = co10.getElapsedTime();
 
 
 
@@ -3651,6 +3674,7 @@ int main()
 				}
 				if (lock != 1)
 				{
+					co10.restart();
 					co7.restart();
 				}
 
@@ -3704,9 +3728,16 @@ int main()
 						}
 					}
 
+
 					//BossShoot
+					if (alarmTime.asSeconds() >= 6)
+					{
+						co10.restart();
+						sAlarm.play();
+					}
 					if (bossShoot.asSeconds() >= 7)
 					{
+						co10.restart();
 						co7.restart();
 						speedBoss0 = rand() % 5;
 						speedBoss1 = rand() % 5;
@@ -3907,6 +3938,8 @@ int main()
 				{
 					clearTime3 = allTime.asSeconds();
 					win.move(0,500*dt);
+					youwin = 1;
+
 					if (win.getPosition().y >= 10)
 					{
 						win.move(0, -500*dt);
@@ -4127,8 +4160,9 @@ int main()
 					{
 						name[j] = name[j - 1];
 					}
+					name[NoOfChange] = playerName;
 				}
-				name[NoOfChange] = playerName;
+				
 				for (int i = 1; i <= 5; i++)
 				{
 					writeNameFile << name[i] << endl;
@@ -4137,6 +4171,10 @@ int main()
 			}
 			writeNameFile.close();
 
+			scoreshow = score;
+			clearTime1 = 1000;
+			clearTime2 = 1000;
+			clearTime3 = 1000;
 
 			scoreboard = 1;
 		}
@@ -4145,9 +4183,26 @@ int main()
 		if (scoreboard == 1)
 		{
 			scoreboard = 0;
+			sf::Texture bg;
+			bg.loadFromFile("bgscore.png");
+			sf::Sprite bgScore;
+			bgScore.setTexture(bg);
 			sf::Font font;
-			font.loadFromFile("BAUHS93.TTF");
-			sf::Text Scorelbl[6],Namelbl[6];
+			font.loadFromFile("BRLNSDB.TTF");
+			sf::Text Scorelbl[6],Namelbl[6],lblNamePlayer,lblScorePlayer;
+			ostringstream sctotxt;
+			sctotxt << scoreshow;
+
+			lblNamePlayer.setFont(font);
+			lblNamePlayer.setCharacterSize(50);
+			lblNamePlayer.setFillColor(sf::Color(255, 209, 77));
+			lblNamePlayer.setString(playerName);
+			lblScorePlayer.setFont(font);
+			lblScorePlayer.setCharacterSize(50);
+			lblScorePlayer.setFillColor(sf::Color(255, 209, 77));
+			lblScorePlayer.setString(sctotxt.str());
+			lblScorePlayer.setPosition(818,660);
+			lblNamePlayer.setPosition(362,660);
 
 			ostringstream arragesc[6];
 
@@ -4158,24 +4213,24 @@ int main()
 			for (int i = 1; i <= 5; i++)
 			{
 				Scorelbl[i].setFont(font);
-				Scorelbl[i].setCharacterSize(40);
-				Scorelbl[i].setFillColor(sf::Color::White);
+				Scorelbl[i].setCharacterSize(50);
+				Scorelbl[i].setFillColor(sf::Color(255,209,77));
 				Scorelbl[i].setString(arragesc[i].str());
 				Namelbl[i].setFont(font);
-				Namelbl[i].setCharacterSize(40);
-				Namelbl[i].setFillColor(sf::Color::White);
+				Namelbl[i].setCharacterSize(50);
+				Namelbl[i].setFillColor(sf::Color(255, 209, 77));
 				Namelbl[i].setString(name[i]);
 			}
-			Scorelbl[1].setPosition(1100,170);
-			Scorelbl[2].setPosition(1100, 270);
-			Scorelbl[3].setPosition(1100, 370);
-			Scorelbl[4].setPosition(1100, 470);
-			Scorelbl[5].setPosition(1100, 570);
-			Namelbl[1].setPosition(500, 170);
-			Namelbl[2].setPosition(500, 270);
-			Namelbl[3].setPosition(500, 370);
-			Namelbl[4].setPosition(500, 470);
-			Namelbl[5].setPosition(500, 570);
+			Scorelbl[1].setPosition(818,188);
+			Scorelbl[2].setPosition(818, 275);
+			Scorelbl[3].setPosition(818, 356);
+			Scorelbl[4].setPosition(818, 440);
+			Scorelbl[5].setPosition(818, 524);
+			Namelbl[1].setPosition(362, 188);
+			Namelbl[2].setPosition(362, 275);
+			Namelbl[3].setPosition(362, 356);
+			Namelbl[4].setPosition(362, 440);
+			Namelbl[5].setPosition(362, 524);
 
 
 			while (true)
@@ -4203,7 +4258,14 @@ int main()
 				{
 					break;
 				}
-				window.clear(sf::Color::Blue);
+				window.clear();
+
+				window.draw(bgScore);
+				if (youwin == 1)
+				{
+					window.draw(lblNamePlayer);
+					window.draw(lblScorePlayer);
+				}
 
 				for (int i = 1; i <= 5; i++)
 				{
@@ -4230,6 +4292,14 @@ int main()
 			ostringstream showdead;
 			showdead << "GAME OVER";
 			deadtext.setString(showdead.str());
+
+			sf::SoundBuffer soundBye;
+			soundBye.loadFromFile("bye.wav");
+			sf::Sound sBye;
+			sBye.setBuffer(soundBye);
+			sBye.setVolume(30);
+			sBye.play();
+
 			while (true)
 			{
 				deadtime = codead.getElapsedTime();
