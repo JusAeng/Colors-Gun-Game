@@ -24,11 +24,11 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1560, 780), "JusGame", sf::Style::Close| sf::Style::Resize);
 	sf::Event ev;
 
-	//Engine Var
+	//Engine Page
 	int stage = 0,ename=0,dead=0,scoreboard=0, RecordScore = 0;
 
 	//score
-	int replace,clearTime1=1000, clearTime2=1000, clearTime3=1000, score = 0;
+	int clearTime1=1000, clearTime2=1000, clearTime3=1000, score = 0;
 	int highScore[6], loopscore = 1;
 	string readScore,readName;
 	
@@ -46,6 +46,10 @@ int main()
 		if (stage == 0)
 		{
 			stage = -1;
+			sf::Sprite bgmenu;
+			sf::Texture bg;
+			bg.loadFromFile("bgmenu.png");
+			bgmenu.setTexture(bg);
 			while (true)
 			{
 				while (window.pollEvent(ev))
@@ -80,7 +84,8 @@ int main()
 						}
 					}
 				}
-				window.clear(sf::Color::Black);
+				window.clear();
+				window.draw(bgmenu);
 				menu.toDraw(window);
 				window.display();
 				if (ename==1||RecordScore==1)
@@ -4142,7 +4147,7 @@ int main()
 			scoreboard = 0;
 			sf::Font font;
 			font.loadFromFile("BAUHS93.TTF");
-			sf::Text Scorelbl[6];
+			sf::Text Scorelbl[6],Namelbl[6];
 
 			ostringstream arragesc[6];
 
@@ -4156,13 +4161,21 @@ int main()
 				Scorelbl[i].setCharacterSize(40);
 				Scorelbl[i].setFillColor(sf::Color::White);
 				Scorelbl[i].setString(arragesc[i].str());
+				Namelbl[i].setFont(font);
+				Namelbl[i].setCharacterSize(40);
+				Namelbl[i].setFillColor(sf::Color::White);
+				Namelbl[i].setString(name[i]);
 			}
-			Scorelbl[1].setPosition(780,120);
-			Scorelbl[2].setPosition(780, 240);
-			Scorelbl[3].setPosition(780, 360);
-			Scorelbl[4].setPosition(780, 480);
-			Scorelbl[5].setPosition(780, 600);
-
+			Scorelbl[1].setPosition(1100,170);
+			Scorelbl[2].setPosition(1100, 270);
+			Scorelbl[3].setPosition(1100, 370);
+			Scorelbl[4].setPosition(1100, 470);
+			Scorelbl[5].setPosition(1100, 570);
+			Namelbl[1].setPosition(500, 170);
+			Namelbl[2].setPosition(500, 270);
+			Namelbl[3].setPosition(500, 370);
+			Namelbl[4].setPosition(500, 470);
+			Namelbl[5].setPosition(500, 570);
 
 
 			while (true)
@@ -4195,8 +4208,8 @@ int main()
 				for (int i = 1; i <= 5; i++)
 				{
 					window.draw(Scorelbl[i]);
+					window.draw(Namelbl[i]);
 				}
-
 				window.display();
 			}
 		}
