@@ -4054,6 +4054,7 @@ int main()
 			int seqChange=0, NoOfChange=0;
 
 			score = 60000-(clearTime1*100 + clearTime2*100 + clearTime3*100);
+
 			if (score <= 0)
 			{
 				score = 0;
@@ -4122,11 +4123,11 @@ int main()
 						name[j] = name[j - 1];
 					}
 				}
+				name[NoOfChange] = playerName;
 				for (int i = 1; i <= 5; i++)
 				{
 					writeNameFile << name[i] << endl;
 				}
-				name[NoOfChange] = playerName;
 
 			}
 			writeNameFile.close();
