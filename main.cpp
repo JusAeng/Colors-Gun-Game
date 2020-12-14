@@ -30,15 +30,15 @@ int main()
 	//score
 	int replace,clearTime1=1000, clearTime2=1000, clearTime3=1000, score = 0;
 	int highScore[6], loopscore = 1;
-	string readScore;
+	string readScore,readName;
 	
-	string name[6];
+	string name[6],playerName;
 	//
 
 
 	Menu menu(window.getSize().x, window.getSize().y);
 
-	ifstream readFile;
+	ifstream readFile,readNameFile;
 
 	while (true)
 	{
@@ -107,6 +107,7 @@ int main()
 
 			sf::Clock cotype;
 			sf::Time cdtype=cotype.getElapsedTime();
+			float keycool=0.22;
 
 			char intname[9];
 
@@ -126,6 +127,7 @@ int main()
 						{
 						case sf::Keyboard::Enter:
 							stage = 1;
+							playerName = showName.str();
 							break;
 						case sf::Keyboard::Escape:
 							stage = 0;
@@ -135,9 +137,10 @@ int main()
 				}
 				cdtype = cotype.getElapsedTime();
 				
+				//typeA-Z
 				if (loopname <= 8)
 				{
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && cdtype.asSeconds() >= 0.2)
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && cdtype.asSeconds() >= keycool)
 					{
 						cotype.restart();
 						intname[loopname] = 'A';
@@ -145,7 +148,7 @@ int main()
 						lblName.setString(showName.str());
 						loopname += 1;
 					}
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::B) && cdtype.asSeconds() >= 0.2)
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::B) && cdtype.asSeconds() >= keycool)
 					{
 						cotype.restart();
 						intname[loopname] = 'B';
@@ -153,15 +156,222 @@ int main()
 						lblName.setString(showName.str());
 						loopname += 1;
 					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'C';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'D';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'E';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'F';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'G';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::H) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'H';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::I) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'I';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::J) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'J';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::K) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'K';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::L) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'L';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'M';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::N) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'N';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::O) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'O';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'P';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'Q';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'R';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'S';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'T';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::U) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'U';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'V';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'W';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'X';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Y) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'Y';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) && cdtype.asSeconds() >= keycool)
+					{
+						cotype.restart();
+						intname[loopname] = 'Z';
+						showName << intname[loopname];
+						lblName.setString(showName.str());
+						loopname += 1;
+					}
 				}
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Delete) && cdtype.asSeconds() >= 0.2)
-				{
-					
-				}
-
 				
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::BackSpace) && cdtype.asSeconds() >= 0.3)
+				{
+					cotype.restart();
+					loopname = 0;
+					showName.str("");
+					lblName.setString(showName.str());
+				}
 
+				//CheckWriteFileShowname
+				/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Delete) && cdtype.asSeconds() >= 1)
+				{
 
+					//write
+					ofstream writeNameFile("nametxt.txt");
+					if (writeNameFile.is_open())
+					{
+						writeNameFile << showName.str() << endl;
+					}
+					writeNameFile.close();
+
+				}*/
+	
 
 				window.clear(sf::Color(171,149,132));
 
@@ -3837,6 +4047,12 @@ int main()
 		if (RecordScore == 1)
 		{
 			RecordScore = 0;
+
+			//Score=======================================================================
+
+			//RelateNameVariable
+			int seqChange=0, NoOfChange=0;
+
 			score = 60000-(clearTime1*100 + clearTime2*100 + clearTime3*100);
 			if (score <= 0)
 			{
@@ -3862,6 +4078,8 @@ int main()
 				{
 					if (score > highScore[i])
 					{
+						seqChange = 1;
+						NoOfChange = i;
 						for (int j = 5; j >i ; j--)
 						{
 							highScore[j] = highScore[j-1];
@@ -3877,6 +4095,42 @@ int main()
 
 			}
 			writeFile.close();
+			//==========================================================================
+
+			//NameSeq
+			int seqname=1;
+			//read
+			readNameFile.open("nametxt.txt");
+			if (readNameFile.is_open())
+			{
+				while (getline(readNameFile, readName) && seqname <= 5)
+				{
+					name[seqname]=readName;
+					seqname += 1;
+				}
+			}
+			readNameFile.close();
+
+			//write
+			ofstream writeNameFile("nametxt.txt");
+			if (writeNameFile.is_open())
+			{
+				if (seqChange == 1 && NoOfChange>0)
+				{
+					for (int j = 5; j > NoOfChange; j--)
+					{
+						name[j] = name[j - 1];
+					}
+				}
+				for (int i = 1; i <= 5; i++)
+				{
+					writeNameFile << name[i] << endl;
+				}
+				name[NoOfChange] = playerName;
+
+			}
+			writeNameFile.close();
+
 
 			scoreboard = 1;
 		}
