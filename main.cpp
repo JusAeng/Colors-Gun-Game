@@ -28,9 +28,11 @@ int main()
 	int stage = 0,ename=0,dead=0,scoreboard=0, RecordScore = 0;
 
 	//score
-	int clearTime1 = 1000, clearTime2 = 1000, clearTime3 = 1000, score = 0, scoreshow = 0;;
+	int clearTime1 = 1000, clearTime2 = 1000, clearTime3 = 1000, deadc = 0, itemc = 0, score = 0, scoreshow = 0;;
 	int highScore[6], loopscore = 1;
 	int youwin = 0;
+
+
 	string readScore,readName;
 	
 	string name[6],playerName;
@@ -47,10 +49,22 @@ int main()
 		if (stage == 0)
 		{
 			stage = -1;
+			deadc = 0;
+			itemc = 0;
+
 			sf::Sprite bgmenu;
 			sf::Texture bg;
-			bg.loadFromFile("bgmenu.png");
+			bg.loadFromFile("bgmenutest.png");
 			bgmenu.setTexture(bg);
+			sf::SoundBuffer soundmenu;
+			if (!soundmenu.loadFromFile("smenu.wav"))
+			{
+				cout << "Noo";
+			}
+			sf::Sound smenu;
+			smenu.setBuffer(soundmenu);
+			smenu.setVolume(15.0);
+
 			while (true)
 			{
 				while (window.pollEvent(ev))
@@ -65,9 +79,11 @@ int main()
 						{
 						case sf::Keyboard::W:
 							menu.moveUp();
+							smenu.play();
 							break;
 						case sf::Keyboard::S:
 							menu.moveDown();
+							smenu.play();
 							break;
 						case sf::Keyboard::Enter:
 							switch (menu.getPressItem())
@@ -1355,18 +1371,21 @@ int main()
 				//ItemCollect
 				if (player.getGlobalBounds().intersects(item.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					item.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
 				if (player.getGlobalBounds().intersects(item2.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					item2.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
 				if (player.getGlobalBounds().intersects(item3.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					item3.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
@@ -2494,30 +2513,35 @@ int main()
 				//ItemCollect
 				if (player.getGlobalBounds().intersects(item.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					item.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
 				if (player.getGlobalBounds().intersects(item2.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					item2.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
 				if (player.getGlobalBounds().intersects(item3.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					item3.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
 				if (player.getGlobalBounds().intersects(item4.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					item4.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
 				if (player.getGlobalBounds().intersects(item5.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					item5.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
@@ -2967,7 +2991,7 @@ int main()
 			int lock = 0;
 
 			//Boss
-			int clear = 0, weak,come=0,bossHp=35;
+			int clear = 0, weak,come=0,bossHp=30;
 			//bullboss
 			int bossgo=0, speedBoss1 = 0, speedBoss2 = 0; 
 			int speedBoss3 = 0, speedBoss4 = 0, speedBoss0 = 0, colorBull[5], weakBull[5];
@@ -3641,18 +3665,21 @@ int main()
 				//ItemCollect
 				if (player.getGlobalBounds().intersects(item.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					item.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
 				if (player.getGlobalBounds().intersects(item2.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					item2.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
 				}
 				if (player.getGlobalBounds().intersects(itemBoss.getGlobalBounds()))
 				{
+					itemc += 1;
 					co3.restart();
 					itemBoss.setPOs({ -50.0f,-50.0f });
 					ulti = 1;
@@ -3906,6 +3933,7 @@ int main()
 
 					if (bossHp <= 0)
 					{
+						sAlarm.setVolume(0);
 						boss.setPos({ -500,-500 });
 						co7.restart();
 						bullcount = 0;
@@ -4091,7 +4119,7 @@ int main()
 			//RelateNameVariable
 			int seqChange=0, NoOfChange=0;
 
-			score = 60000-(clearTime1*100 + clearTime2*100 + clearTime3*100);
+			score = 60000-(clearTime1*100 + clearTime2*100 + clearTime3*100)-(deadc*500)+(itemc*300);
 
 			if (score <= 0)
 			{
@@ -4280,6 +4308,8 @@ int main()
 		if (dead == 1)
 		{
 			dead = 0;
+			deadc += 1;
+
 			sf::Clock codead;
 			sf::Time deadtime;
 			sf::Sprite bgOVer;
